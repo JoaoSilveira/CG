@@ -1,0 +1,14 @@
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\bin\Debug\CG-Final.exe.config
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\bin\Debug\CG-Final.exe
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\bin\Debug\CG-Final.pdb
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\CG-Final.csprojResolveAssemblyReference.cache
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\MainWindow.g.cs
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\App.g.cs
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\CG-Final_MarkupCompile.cache
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\CG-Final_MarkupCompile.lref
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\MainWindow.baml
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\CG-Final.g.resources
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\CG_Final.Properties.Resources.resources
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\CG-Final.csproj.GenerateResource.Cache
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\CG-Final.exe
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\CG-Final.pdb
