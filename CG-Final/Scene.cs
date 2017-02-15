@@ -14,6 +14,8 @@ namespace CG_Final
     [Serializable]
     public class Scene : INotifyPropertyChanged
     {
+        public static Scene CurrentScene { get; set; }
+
         private readonly Camera _camera1;
         private readonly Camera _camera2;
         private readonly Camera _camera3;
@@ -31,10 +33,15 @@ namespace CG_Final
         [XmlIgnore]
         public ImageSource Cam4Source => Convert(_camera4.ZBuffer.Bitmap);
 
+        public Camera Camera1 => _camera1;
+
         public Color AmbientLight { get; set; }
 
         [XmlArray]
         public List<Lamp> Lamps { get; set; }
+
+        [XmlArray]
+        public List<ObjectBase> Objects { get; set; } 
 
         public Scene()
         {
@@ -47,6 +54,10 @@ namespace CG_Final
             _camera2.PropertyChanged += (sender, args) => OnPropertyChanged(nameof(Cam2Source));
             _camera3.PropertyChanged += (sender, args) => OnPropertyChanged(nameof(Cam3Source));
             _camera4.PropertyChanged += (sender, args) => OnPropertyChanged(nameof(Cam4Source));
+
+            Lamps = new List<Lamp>();
+            Objects = new List<ObjectBase>();
+            Objects.Add(new ObjectBase());
         }
 
         public BitmapSource Convert(Bitmap bitmap)

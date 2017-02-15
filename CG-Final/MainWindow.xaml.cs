@@ -24,14 +24,13 @@ namespace CG_Final
     /// </summary>
     public partial class MainWindow
     {
-        private static Scene _currentScene;
-
-        public Scene CurrentScene => _currentScene;
+        public Scene CurrentScene => Scene.CurrentScene;
 
         public MainWindow()
         {
-            _currentScene = new Scene();
+            Scene.CurrentScene = new Scene();
             InitializeComponent();
+            Scene.CurrentScene.Camera1.DrawScene();
         }
     }
 }

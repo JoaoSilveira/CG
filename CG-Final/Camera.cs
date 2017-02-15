@@ -165,7 +165,19 @@ namespace CG_Final
 
         public void DrawScene()
         {
-            
+            var currs = Scene.CurrentScene;
+
+            foreach (var objectBase in currs.Objects)
+            {
+                foreach (var edge in objectBase.Edges)
+                {
+                    var line = new Line((Point) edge.Init, (Point) edge.End);
+
+                    line.Draw(ZBuffer);
+                }
+            }
+
+            OnPropertyChanged(nameof(ZBuffer));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

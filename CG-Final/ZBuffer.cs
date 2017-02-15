@@ -35,8 +35,10 @@ namespace CG_Final
 
         public void SetPixel(int x, int y, double depth, Color color)
         {
-            if (depth > Depth[y, x])
-                Bitmap.SetPixel(x, y, color);
+            if (!(depth > Depth[y, x])) return;
+
+            Bitmap.SetPixel(x, y, color);
+            Depth[y, x] = depth;
         }
     }
 }

@@ -38,31 +38,53 @@ namespace CG_Final
             Color = Settings.Default.LineDefaultColor;
         }
 
+        /*
+         * 
+         */
+
         public void Draw(ZBuffer img)
         {
-            var a = (int)EndPoint.Y - (int)InitPoint.Y;
-            var b = (int)EndPoint.X - (int)InitPoint.X;
-            var v = 2 * a + b; //valor inicial de V
-            var incrE = 2 * a; //Mover para E
-            var incrNE = 2 * (a + b); //Mover para NE
-            var x = (int)InitPoint.X;
-            var y = (int)InitPoint.Y;
+            Clip(img);
 
-            // mudar a profundidade
-            img.SetPixel(x, y, 0, Color);
+            MidpointLine((int)InitPoint.X, (int)InitPoint.Y, (int)EndPoint.X, (int)EndPoint.Y, img);
+        }
 
-            while (x < EndPoint.X)
+        private void MidpointLine(int x, int y, int x2, int y2, ZBuffer img)
+        {
+            int w = x2 - x;
+            int h = y2 - y;
+            int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0;
+            if (w < 0) dx1 = -1; else if (w > 0) dx1 = 1;
+            if (h < 0) dy1 = -1; else if (h > 0) dy1 = 1;
+            if (w < 0) dx2 = -1; else if (w > 0) dx2 = 1;
+
+            int longest = Math.Abs(w);
+            int shortest = Math.Abs(h);
+
+            if (!(longest > shortest))
             {
-                if (v <= 0) v += incrE; //escolhe E
-                else
-                { //escolhe NE
-                    v += incrNE;
-                    ++y;
+                longest = Math.Abs(h);
+                shortest = Math.Abs(w);
+                if (h < 0) dy2 = -1;
+                else if (h > 0) dy2 = 1;
+                dx2 = 0;
+            }
+            int numerator = longest >> 1;
+            for (int i = 0; i <= longest; i++)
+            {
+                img.SetPixel(x, y, 0, Color);
+                numerator += shortest;
+                if (!(numerator < longest))
+                {
+                    numerator -= longest;
+                    x += dx1;
+                    y += dy1;
                 }
-                ++x;
-
-                // mudar a profundidade
-                img.SetPixel(x, y, 0, Color); //Plota o ponto final
+                else
+                {
+                    x += dx2;
+                    y += dy2;
+                }
             }
         }
 
