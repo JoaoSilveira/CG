@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -9,7 +11,7 @@ namespace CG_Final
 {
     [Serializable]
     [XmlInclude(typeof(PerspectiveCamera))]
-    public class Camera
+    public class Camera : INotifyPropertyChanged 
     {
         #region Properties
         public Vector ViewUp
@@ -138,23 +140,39 @@ namespace CG_Final
             V = Vector.Normalize(ViewUp - ViewUp.DotProduct(N) * N);
             U = Vector.VectorialProduct(V, N);
 
-            _sru_src = Matrix.IdentityMatrix;
-            _sru_src[0, 0] = U.X;
-            _sru_src[0, 1] = U.Y;
-            _sru_src[0, 2] = U.Z;
-            _sru_src[0, 3] = -Vector.DotProduct(new Vector(_vrp), U);
-            _sru_src[1, 0] = V.X;
-            _sru_src[1, 1] = V.Y;
-            _sru_src[1, 2] = V.Z;
-            _sru_src[1, 3] = -Vector.DotProduct(new Vector(_vrp), V);
-            _sru_src[2, 0] = N.X;
-            _sru_src[2, 1] = N.Y;
-            _sru_src[2, 2] = N.Z;
-            _sru_src[2, 3] = -Vector.DotProduct(new Vector(_vrp), N);
+            _sru_src = new Matrix
+            {
+                [0, 0] = U.X,
+                [0, 1] = U.Y,
+                [0, 2] = U.Z,
+                [0, 3] = -Vector.DotProduct(new Vector(_vrp), U),
+                [1, 0] = V.X,
+                [1, 1] = V.Y,
+                [1, 2] = V.Z,
+                [1, 3] = -Vector.DotProduct(new Vector(_vrp), V),
+                [2, 0] = N.X,
+                [2, 1] = N.Y,
+                [2, 2] = N.Z,
+                [2, 3] = -Vector.DotProduct(new Vector(_vrp), N)
+            };
 
-            _src_srt = Matrix.IdentityMatrix;
-            _src_srt[0, 0] = WorldWidth / ZBuffer.Width;
-            _src_srt[1, 1] = WorldHeight / ZBuffer.Height;
+            _src_srt = new Matrix
+            {
+                [0, 0] = WorldWidth/ZBuffer.Width,
+                [1, 1] = WorldHeight/ZBuffer.Height
+            };
+        }
+
+        public void DrawScene()
+        {
+            
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 
@@ -194,9 +212,11 @@ namespace CG_Final
         {
             base.UpdateCameraParameters();
 
-            _pers = Matrix.IdentityMatrix;
-            _pers[3, 2] = -1 / Dp;
-            _pers[3, 3] = 0;
+            _pers = new Matrix
+            {
+                [3, 2] = -1/Dp,
+                [3, 3] = 0
+            };
         }
     }
 }

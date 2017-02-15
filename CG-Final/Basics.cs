@@ -11,7 +11,7 @@ using System.Xml.Serialization;
 namespace CG_Final
 {
     [Serializable]
-    public struct Vector
+    public class Vector
     {
         public double X;
         public double Y;
@@ -107,7 +107,7 @@ namespace CG_Final
     }
 
     [Serializable]
-    public struct Point
+    public class Point
     {
         public double X;
         public double Y;
@@ -175,19 +175,19 @@ namespace CG_Final
     }
 
     [Serializable]
-    public struct Vertex
+    public class Vertex
     {
         public double X;
         public double Y;
         public double Z;
-        public unsafe Edge* Edge;
+        public Edge Edge;
 
         public static explicit operator Point(Vertex v)
         {
             return new Point(v.X, v.Y, v.Z);
         }
 
-        public unsafe List<Face> GetSharedFaces()
+        public List<Face> GetSharedFaces()
         {
             var e = Edge;
             var first = Edge;
@@ -195,15 +195,15 @@ namespace CG_Final
 
             do
             {
-                if (e == Edge->Init)
+                if (this == Edge.Init)
                 {
-                    list.Add(*e->Left);
-                    e = e->LowerLeft;
+                    list.Add(e.Left);
+                    e = e.LowerLeft;
                 }
                 else
                 {
-                    list.Add(*e->Right);
-                    e = e->UpperRight;
+                    list.Add(e.Right);
+                    e = e.UpperRight;
                 }
             } while (e != first);
 
@@ -226,11 +226,16 @@ namespace CG_Final
     }
 
     [Serializable]
-    public struct Matrix : IXmlSerializable
+    public class Matrix : IXmlSerializable
     {
         public const double DegreesToRadians = Math.PI / 180;
 
-        private double[,] _matrix;
+        private readonly double[,] _matrix;
+
+        public Matrix()
+        {
+            _matrix = new double[,] { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } };
+        }
 
         public double this[int x, int y]
         {
@@ -380,8 +385,6 @@ namespace CG_Final
             };
         }
 
-        public static Matrix IdentityMatrix => new Matrix { _matrix = new double[,] { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } } };
-
         public override string ToString()
         {
             return $"{this[0, 0]} {this[1, 0]} {this[2, 0]} {this[3, 0]}\n" +
@@ -405,73 +408,63 @@ namespace CG_Final
 
             for (var i = 0; i < 4; i++)
             {
-                
+
             }
         }
 
         public void WriteXml(XmlWriter writer)
         {
-            writer.WriteElementString("line1", $"{this[0,0]} {this[1,0]} {this[2,0]} {this[3,0]}");
-            writer.WriteElementString("line2", $"{this[0,1]} {this[1,1]} {this[2,1]} {this[3,1]}");
-            writer.WriteElementString("line3", $"{this[0,2]} {this[1,2]} {this[2,2]} {this[3,2]}");
-            writer.WriteElementString("line4", $"{this[0,3]} {this[1,3]} {this[2,3]} {this[3,3]}");
+            writer.WriteElementString("line1", $"{this[0, 0]} {this[1, 0]} {this[2, 0]} {this[3, 0]}");
+            writer.WriteElementString("line2", $"{this[0, 1]} {this[1, 1]} {this[2, 1]} {this[3, 1]}");
+            writer.WriteElementString("line3", $"{this[0, 2]} {this[1, 2]} {this[2, 2]} {this[3, 2]}");
+            writer.WriteElementString("line4", $"{this[0, 3]} {this[1, 3]} {this[2, 3]} {this[3, 3]}");
         }
     }
 
-    public unsafe struct Edge
+    public class Edge
     {
-        public Vertex* Init;
-        public Vertex* End;
-        public Face* Left;
-        public Face* Right;
-        public Edge* UpperLeft;
-        public Edge* UpperRight;
-        public Edge* LowerLeft;
-        public Edge* LowerRight;
+        public Vertex Init;
+        public Vertex End;
+        public Face Left;
+        public Face Right;
+        public Edge UpperLeft;
+        public Edge UpperRight;
+        public Edge LowerLeft;
+        public Edge LowerRight;
     }
 
-    public struct Face
+    public class Face
     {
-        public unsafe Edge* Edge;
+        public Edge Edge;
 
-        public unsafe List<Edge> GetEdges()
+        public List<Edge> GetEdges()
         {
             var e = Edge;
             var list = new List<Edge>();
 
-            fixed (Face* f = &this)
+            do
             {
-                do
-                {
-                    list.Add(*e);
-                    e = e->Left == f ? e->UpperLeft : e->LowerRight;
-                } while (e != Edge);
-            }
+                list.Add(e);
+                e = e.Left == this ? e.UpperLeft : e.LowerRight;
+            } while (e != Edge);
 
             return list;
         }
 
-        public unsafe Vector NormalVector()
+        public Vector NormalVector()
         {
-            var b = GetEdgeVector(*Edge);
-
-            fixed (Face* f = &this)
-            {
-                return
-                    Vector.Normalize(
-                        b.VectorialProduct(GetEdgeVector(Edge->Left == f ? *Edge->LowerLeft : *Edge->UpperRight)));
-            }
+            var b = GetEdgeVector(Edge);
+            return
+                Vector.Normalize(
+                    b.VectorialProduct(GetEdgeVector(Edge.Left == this ? Edge.LowerLeft : Edge.UpperRight)));
         }
 
-        public unsafe Vector GetEdgeVector(Edge e)
+        public Vector GetEdgeVector(Edge e)
         {
-            fixed (Face* f = &this)
-            {
-                if (f == e.Left)
-                    return (Point)(*e.End) - (Point)(*e.Init);
+            if (this == e.Left)
+                return (Point)(e.End) - (Point)(e.Init);
 
-                return (Point)(*e.Init) - (Point)(*e.End);
-            }
+            return (Point)(e.Init) - (Point)(e.End);
         }
     }
 }
