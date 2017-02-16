@@ -61,27 +61,53 @@ namespace CG_Final
         }
 
         [XmlAttribute]
-        public double WorldWidth
+        public double WorldMaxWidth
         {
-            get { return _worldWidth; }
+            get { return _worldMaxWidth; }
             set
             {
-                if (Math.Abs(value - _worldWidth) < 1)
+                if (Math.Abs(value - _worldMaxWidth) < 1)
                     return;
-                _worldWidth = value;
+                _worldMaxWidth = value;
                 UpdateCameraParameters();
             }
         }
 
         [XmlAttribute]
-        public double WorldHeight
+        public double WorldMaxHeight
         {
-            get { return _worldHeight; }
+            get { return _worldMaxHeight; }
             set
             {
-                if (Math.Abs(value - _worldHeight) < 1)
+                if (Math.Abs(value - _worldMaxHeight) < 1)
                     return;
-                _worldHeight = value;
+                _worldMaxHeight = value;
+                UpdateCameraParameters();
+            }
+        }
+
+        [XmlAttribute]
+        public double WorldMinWidth
+        {
+            get { return _worldMinWidth; }
+            set
+            {
+                if (Math.Abs(value - _worldMinWidth) < 1)
+                    return;
+                _worldMinWidth = value;
+                UpdateCameraParameters();
+            }
+        }
+
+        [XmlAttribute]
+        public double WorldMinHeight
+        {
+            get { return _worldMinHeight; }
+            set
+            {
+                if (Math.Abs(value - _worldMinHeight) < 1)
+                    return;
+                _worldMinHeight = value;
                 UpdateCameraParameters();
             }
         }
@@ -107,10 +133,16 @@ namespace CG_Final
         protected Matrix _src_srt;
 
         [NonSerialized]
-        private double _worldWidth;
+        private double _worldMaxWidth;
 
         [NonSerialized]
-        private double _worldHeight;
+        private double _worldMaxHeight;
+
+        [NonSerialized]
+        private double _worldMinWidth;
+
+        [NonSerialized]
+        private double _worldMinHeight;
 
         [NonSerialized]
         private Vector _viewUp;
@@ -119,7 +151,7 @@ namespace CG_Final
         protected Matrix _transformationMatrix;
         #endregion
 
-        public Camera() : this(new Point(), new Point(z: 50))
+        public Camera() : this(new Point(), new Point(150, 150))
         {
 
         }
@@ -129,8 +161,12 @@ namespace CG_Final
             _canvas = new ZBuffer();
             _p = p;
             _vrp = vrp;
-            _worldWidth = ZBuffer.Width;
-            _worldHeight = ZBuffer.Height;
+            _worldMaxWidth = ZBuffer.Width * 0.8;
+            _worldMaxWidth -= _worldMaxWidth/2;
+            _worldMaxHeight = ZBuffer.Height * 0.8;
+            _worldMaxHeight -= _worldMaxHeight/2;
+            _worldMinWidth = -_worldMaxWidth;
+            _worldMinHeight = -_worldMaxHeight;
             _viewUp = new Vector(y: 1);
         }
 
@@ -143,35 +179,47 @@ namespace CG_Final
             _sru_src = new Matrix
             {
                 [0, 0] = U.X,
-                [0, 1] = U.Y,
-                [0, 2] = U.Z,
-                [0, 3] = -Vector.DotProduct(new Vector(_vrp), U),
-                [1, 0] = V.X,
+                [1, 0] = U.Y,
+                [2, 0] = U.Z,
+                [3, 0] = -Vector.DotProduct(new Vector(_vrp), U),
+                [0, 1] = V.X,
                 [1, 1] = V.Y,
-                [1, 2] = V.Z,
-                [1, 3] = -Vector.DotProduct(new Vector(_vrp), V),
-                [2, 0] = N.X,
-                [2, 1] = N.Y,
+                [2, 1] = V.Z,
+                [3, 1] = -Vector.DotProduct(new Vector(_vrp), V),
+                [0, 2] = N.X,
+                [1, 2] = N.Y,
                 [2, 2] = N.Z,
-                [2, 3] = -Vector.DotProduct(new Vector(_vrp), N)
+                [3, 2] = -Vector.DotProduct(new Vector(_vrp), N)
             };
 
             _src_srt = new Matrix
             {
-                [0, 0] = WorldWidth/ZBuffer.Width,
-                [1, 1] = WorldHeight/ZBuffer.Height
+                [0, 0] = (ZBuffer.WindowMaxWidth - ZBuffer.WindowMinWidth)/(WorldMaxWidth - WorldMinWidth),
+                [1, 1] = (ZBuffer.WindowMinHeight-ZBuffer.WindowMaxHeight) / (WorldMaxHeight - WorldMinHeight),
+                [3, 0] = -WorldMinWidth * ((ZBuffer.WindowMaxWidth - ZBuffer.WindowMinWidth) / (WorldMaxWidth - WorldMinWidth)) + ZBuffer.WindowMinWidth,
+                [3, 1] = WorldMinHeight * ((ZBuffer.WindowMaxHeight - ZBuffer.WindowMinHeight) / (WorldMaxHeight - WorldMinHeight)) + ZBuffer.WindowMaxHeight
             };
+        }
+
+        protected virtual void ApplyMatrices()
+        {
+            _transformationMatrix = new Matrix();
+
+            _transformationMatrix.Concatenate(_src_srt);
+            _transformationMatrix.Concatenate(_sru_src);
         }
 
         public void DrawScene()
         {
+            UpdateCameraParameters();
+            ApplyMatrices();
             var currs = Scene.CurrentScene;
 
             foreach (var objectBase in currs.Objects)
             {
                 foreach (var edge in objectBase.Edges)
                 {
-                    var line = new Line((Point) edge.Init, (Point) edge.End);
+                    var line = new Line(_transformationMatrix * (Point) edge.Init, _transformationMatrix * (Point) edge.End);
 
                     line.Draw(ZBuffer);
                 }

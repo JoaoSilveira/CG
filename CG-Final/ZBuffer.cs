@@ -8,6 +8,12 @@ namespace CG_Final
     {
         public const int Width = 490;
         public const int Height = 330;
+
+        public static int WindowMinWidth = 0;
+        public static int WindowMinHeight = 0;
+        public static int WindowMaxWidth = Width;
+        public static int WindowMaxHeight = Height;
+
         public static Color BackGroundColor;
 
         public readonly Bitmap Bitmap;

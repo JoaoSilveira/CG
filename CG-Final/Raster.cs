@@ -38,10 +38,6 @@ namespace CG_Final
             Color = Settings.Default.LineDefaultColor;
         }
 
-        /*
-         * 
-         */
-
         public void Draw(ZBuffer img)
         {
             Clip(img);
@@ -51,15 +47,18 @@ namespace CG_Final
 
         private void MidpointLine(int x, int y, int x2, int y2, ZBuffer img)
         {
-            int w = x2 - x;
-            int h = y2 - y;
-            int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0;
+            var w = x2 - x;
+            var h = y2 - y;
+            var dx1 = 0;
+            var dy1 = 0;
+            var dx2 = 0;
+            var dy2 = 0;
             if (w < 0) dx1 = -1; else if (w > 0) dx1 = 1;
             if (h < 0) dy1 = -1; else if (h > 0) dy1 = 1;
             if (w < 0) dx2 = -1; else if (w > 0) dx2 = 1;
 
-            int longest = Math.Abs(w);
-            int shortest = Math.Abs(h);
+            var longest = Math.Abs(w);
+            var shortest = Math.Abs(h);
 
             if (!(longest > shortest))
             {
@@ -69,8 +68,8 @@ namespace CG_Final
                 else if (h > 0) dy2 = 1;
                 dx2 = 0;
             }
-            int numerator = longest >> 1;
-            for (int i = 0; i <= longest; i++)
+            var numerator = longest >> 1;
+            for (var i = 0; i <= longest; i++)
             {
                 img.SetPixel(x, y, 0, Color);
                 numerator += shortest;
@@ -92,6 +91,8 @@ namespace CG_Final
         {
             Clip(ref InitPoint.X, 0, ZBuffer.Width);
             Clip(ref InitPoint.Y, 0, ZBuffer.Height);
+            Clip(ref EndPoint.X, 0, ZBuffer.Width);
+            Clip(ref EndPoint.Y, 0, ZBuffer.Height);
         }
 
         private static void Clip(ref double val, double min, double max)
@@ -99,7 +100,7 @@ namespace CG_Final
             if (val < min)
                 val = min;
             if (val >= max)
-                val = max;
+                val = max - 1;
         }
     }
 

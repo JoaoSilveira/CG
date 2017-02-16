@@ -34,8 +34,8 @@ namespace CG_Final
         private Face _top;
         private Face _down;
 
-        private List<Vertex> _vertices;
-        private List<Edge> _edges;
+        private readonly List<Vertex> _vertices;
+        private readonly List<Edge> _edges;
         public List<Face> Faces { get; }
         public List<Edge> Edges => _edges; 
 
@@ -93,23 +93,24 @@ namespace CG_Final
             _edges[8].LowerRight = _edges[6].UpperRight = _edges[5].UpperRight = _edges[4].UpperLeft = _edges[7];
             _edges[7].UpperRight = _edges[6].LowerRight = _edges[5].UpperLeft = _edges[3].UpperRight = _edges[8];
 
-            _vertices[0].X = 200;
-            _vertices[1].X = 100;
-            _vertices[2].X = 100;
-            _vertices[3].X = 100;
-            _vertices[4].X = 100;
-            _vertices[5].X = 100;
-            _vertices[0].Y = 10;
-            _vertices[1].Y = 10;
-            _vertices[1].Z = 50;
-            _vertices[2].Y = 10;
-            _vertices[2].Z = -50;
-            _vertices[3].X = 200;
-            _vertices[3].Y = 150;
-            _vertices[4].Y = 150;
-            _vertices[4].Z = 50;
-            _vertices[5].Y = 150;
-            _vertices[5].Z = -50;
+            _vertices[0].X = 50;
+            _vertices[0].Y = 25;
+            _vertices[0].Z = 0;
+            _vertices[1].X = -25;
+            _vertices[1].Y = 25;
+            _vertices[1].Z = 43.3015;
+            _vertices[2].X = -25;
+            _vertices[2].Y = 25;
+            _vertices[2].Z = -43.3015;
+            _vertices[3].X = 50;
+            _vertices[3].Y = -25;
+            _vertices[3].Z = 0;
+            _vertices[4].X = -25;
+            _vertices[4].Y = -25;
+            _vertices[4].Z = 43.3015;
+            _vertices[5].X = -25;
+            _vertices[5].Y = -25;
+            _vertices[5].Z = -43.3015;
         }
 
         public void ChangeVertices()
