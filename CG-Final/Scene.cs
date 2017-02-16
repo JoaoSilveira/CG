@@ -45,7 +45,7 @@ namespace CG_Final
 
         public Scene()
         {
-            _camera1 = new Camera();
+            _camera1 = new PerspectiveCamera();
             _camera2 = new Camera();
             _camera3 = new Camera();
             _camera4 = new Camera();
