@@ -37,7 +37,7 @@ namespace CG_Final
         private readonly List<Vertex> _vertices;
         private readonly List<Edge> _edges;
         public List<Face> Faces { get; }
-        public List<Edge> Edges => _edges; 
+        public List<Edge> Edges => _edges;
 
         public ObjectBase()
         {

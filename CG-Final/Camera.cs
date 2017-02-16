@@ -11,7 +11,7 @@ namespace CG_Final
 {
     [Serializable]
     [XmlInclude(typeof(PerspectiveCamera))]
-    public class Camera : INotifyPropertyChanged 
+    public class Camera : INotifyPropertyChanged
     {
         #region Properties
         public Vector ViewUp
@@ -149,9 +149,12 @@ namespace CG_Final
 
         [NonSerialized]
         protected Matrix _transformationMatrix;
+
+        [NonSerialized]
+        protected IDrawer _drawAction;
         #endregion
 
-        public Camera() : this(new Point(), new Point(150, 150))
+        public Camera() : this(new Point(), new Point(z: 100))
         {
 
         }
@@ -162,12 +165,13 @@ namespace CG_Final
             _p = p;
             _vrp = vrp;
             _worldMaxWidth = ZBuffer.Width * 0.8;
-            _worldMaxWidth -= _worldMaxWidth/2;
+            _worldMaxWidth -= _worldMaxWidth / 2;
             _worldMaxHeight = ZBuffer.Height * 0.8;
-            _worldMaxHeight -= _worldMaxHeight/2;
+            _worldMaxHeight -= _worldMaxHeight / 2;
             _worldMinWidth = -_worldMaxWidth;
             _worldMinHeight = -_worldMaxHeight;
             _viewUp = new Vector(y: 1);
+            _drawAction = new Wireframe(this);
         }
 
         protected virtual void UpdateCameraParameters()
@@ -194,8 +198,8 @@ namespace CG_Final
 
             _src_srt = new Matrix
             {
-                [0, 0] = (ZBuffer.WindowMaxWidth - ZBuffer.WindowMinWidth)/(WorldMaxWidth - WorldMinWidth),
-                [1, 1] = (ZBuffer.WindowMinHeight-ZBuffer.WindowMaxHeight) / (WorldMaxHeight - WorldMinHeight),
+                [0, 0] = (ZBuffer.WindowMaxWidth - ZBuffer.WindowMinWidth) / (WorldMaxWidth - WorldMinWidth),
+                [1, 1] = (ZBuffer.WindowMinHeight - ZBuffer.WindowMaxHeight) / (WorldMaxHeight - WorldMinHeight),
                 [3, 0] = -WorldMinWidth * ((ZBuffer.WindowMaxWidth - ZBuffer.WindowMinWidth) / (WorldMaxWidth - WorldMinWidth)) + ZBuffer.WindowMinWidth,
                 [3, 1] = WorldMinHeight * ((ZBuffer.WindowMaxHeight - ZBuffer.WindowMinHeight) / (WorldMaxHeight - WorldMinHeight)) + ZBuffer.WindowMaxHeight
             };
@@ -213,17 +217,8 @@ namespace CG_Final
         {
             UpdateCameraParameters();
             ApplyMatrices();
-            var currs = Scene.CurrentScene;
 
-            foreach (var objectBase in currs.Objects)
-            {
-                foreach (var edge in objectBase.Edges)
-                {
-                    var line = new Line(_transformationMatrix * (Point) edge.Init, _transformationMatrix * (Point) edge.End);
-
-                    line.Draw(ZBuffer);
-                }
-            }
+            _drawAction.Draw();
 
             OnPropertyChanged(nameof(ZBuffer));
         }
@@ -233,6 +228,11 @@ namespace CG_Final
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public virtual Point TransformPoint(Point p)
+        {
+            return _transformationMatrix*p;
         }
     }
 
@@ -258,14 +258,13 @@ namespace CG_Final
             }
         }
 
-        public PerspectiveCamera()
+        public PerspectiveCamera() : this (new Point(), new Point(z: 100))
         {
-            _dp = 50;
         }
 
         public PerspectiveCamera(Point p, Point vrp) : base(p, vrp)
         {
-
+            _dp = 50;
         }
 
         protected override void UpdateCameraParameters()
@@ -274,9 +273,63 @@ namespace CG_Final
 
             _pers = new Matrix
             {
-                [3, 2] = -1/Dp,
+                [2, 3] = -1 / Dp,
                 [3, 3] = 0
             };
+        }
+
+        protected override void ApplyMatrices()
+        {
+            _transformationMatrix = new Matrix();
+
+            _transformationMatrix.Concatenate(_src_srt);
+            _transformationMatrix.Concatenate(_pers);
+        }
+
+        public override Point TransformPoint(Point p)
+        {
+            var point = _sru_src * p;
+            var z = point.Z;
+
+            point = _transformationMatrix * p;
+            point.Z = z;
+
+            return point;
+        }
+    }
+
+    public class Wireframe : IDrawer
+    {
+        private readonly Camera _owner;
+        private readonly Dictionary<Vertex, Point> _points;
+
+        public Wireframe(Camera owner)
+        {
+            _owner = owner;
+            _points = new Dictionary<Vertex, Point>();
+        }
+
+
+        public void Draw()
+        {
+            var currs = Scene.CurrentScene;
+
+            foreach (var objectBase in currs.Objects)
+            {
+                foreach (var edge in objectBase.Edges)
+                {
+                    if (!_points.ContainsKey(edge.Init))
+                        _points.Add(edge.Init, _owner.TransformPoint((Point) edge.Init));
+                    if (!_points.ContainsKey(edge.End))
+                        _points.Add(edge.End, _owner.TransformPoint((Point) edge.End));
+
+                    var line = new Line(_points[edge.Init], _points[edge.End]);
+
+                    line.Draw(_owner.ZBuffer);
+                }
+            }
+
+            _points.Clear();
         }
     }
 }
