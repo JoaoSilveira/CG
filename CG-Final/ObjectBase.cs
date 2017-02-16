@@ -113,9 +113,45 @@ namespace CG_Final
             _vertices[5].Z = -43.3015;
         }
 
-        public void ChangeVertices()
+        public void ChangeVertices(int n)
         {
-            
+            var newv = new List<Vertex>();
+            var newe = new List<Edge>();
+            var newf = new List<Face>();
+
+            for (var i = 0; i < n; i++)
+            {
+                newf.Add(new Face());
+            }
+
+            for (var i = 0; i < n * 2; i++)
+            {
+                newv.Add(new Vertex {X = 50});
+            }
+
+            for (var i = 0; i < n * 3; i++)
+            {
+                var e = new Edge { Left = newf[i / 3] };
+
+                if (i%3 == 1)
+                {
+                    e.Init = newv[]
+                }
+
+                switch (i % 3)
+                {
+                    case 0:
+                        e.Right = Faces[0];
+                        break;
+                    case 2:
+                        e.Right = Faces[4];
+                        break;
+                    case 1:
+                        e.Right = i == n*3 - 2 ? Faces[3] : newf[i/3 + 1];
+                        break;
+                }
+                newe.Add(e);
+            }
         }
 
     }
