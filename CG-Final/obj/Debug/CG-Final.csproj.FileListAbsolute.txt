@@ -15,3 +15,14 @@ C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\D
 C:\Users\jairluiz\Source\Repos\CG\CG-Final\bin\Debug\CG-Final.exe.config
 C:\Users\jairluiz\Source\Repos\CG\CG-Final\obj\Debug\CG-Final.exe
 C:\Users\jairluiz\Source\Repos\CG\CG-Final\obj\Debug\CG-Final.pdb
+C:\Users\jairluiz\Source\Repos\CG\CG-Final\bin\Debug\CG-Final.exe
+C:\Users\jairluiz\Source\Repos\CG\CG-Final\bin\Debug\CG-Final.pdb
+C:\Users\jairluiz\Source\Repos\CG\CG-Final\obj\Debug\CG-Final.csprojResolveAssemblyReference.cache
+C:\Users\jairluiz\Source\Repos\CG\CG-Final\obj\Debug\MainWindow.g.cs
+C:\Users\jairluiz\Source\Repos\CG\CG-Final\obj\Debug\App.g.cs
+C:\Users\jairluiz\Source\Repos\CG\CG-Final\obj\Debug\CG-Final_MarkupCompile.cache
+C:\Users\jairluiz\Source\Repos\CG\CG-Final\obj\Debug\CG-Final_MarkupCompile.lref
+C:\Users\jairluiz\Source\Repos\CG\CG-Final\obj\Debug\MainWindow.baml
+C:\Users\jairluiz\Source\Repos\CG\CG-Final\obj\Debug\CG-Final.g.resources
+C:\Users\jairluiz\Source\Repos\CG\CG-Final\obj\Debug\CG_Final.Properties.Resources.resources
+C:\Users\jairluiz\Source\Repos\CG\CG-Final\obj\Debug\CG-Final.csproj.GenerateResource.Cache

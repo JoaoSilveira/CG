@@ -48,8 +48,8 @@ namespace CG_Final
 
         public Line(Point init, Point end)
         {
-            InitPoint = init;
-            EndPoint = end;
+            InitPoint = new Point(init.X, init.Y);
+            EndPoint = new Point(end.X, end.Y);
             Color = Settings.Default.LineDefaultColor;
         }
 
@@ -200,16 +200,20 @@ namespace CG_Final
             foreach (var edge in face.GetEdgesClockWise())
             {
                 _object.Add(edge.Left == face
-                    ? new PolEdge((Point)edge.End, (Point)edge.Init)
-                    : new PolEdge((Point)edge.Init, (Point)edge.End));
+                    ? new PolEdge((Point) edge.End, (Point) edge.Init)
+                    : new PolEdge((Point) edge.Init, (Point) edge.End));
             }
-            _window.Add(new PolEdge(new Point(ZBuffer.WindowMinWidth, ZBuffer.WindowMinHeight), new Point(ZBuffer.WindowMaxWidth, ZBuffer.WindowMinHeight)));
-            _window.Add(new PolEdge(new Point(ZBuffer.WindowMaxWidth, ZBuffer.WindowMinHeight), new Point(ZBuffer.WindowMaxWidth, ZBuffer.WindowMaxHeight)));
-            _window.Add(new PolEdge(new Point(ZBuffer.WindowMaxWidth, ZBuffer.WindowMaxHeight), new Point(ZBuffer.WindowMinWidth, ZBuffer.WindowMaxHeight)));
-            _window.Add(new PolEdge(new Point(ZBuffer.WindowMinWidth, ZBuffer.WindowMaxHeight), new Point(ZBuffer.WindowMinWidth, ZBuffer.WindowMinHeight)));
+            _window.Add(new PolEdge(new Point(ZBuffer.WindowMinWidth, ZBuffer.WindowMinHeight),
+                new Point(ZBuffer.WindowMaxWidth, ZBuffer.WindowMinHeight)));
+            _window.Add(new PolEdge(new Point(ZBuffer.WindowMaxWidth, ZBuffer.WindowMinHeight),
+                new Point(ZBuffer.WindowMaxWidth, ZBuffer.WindowMaxHeight)));
+            _window.Add(new PolEdge(new Point(ZBuffer.WindowMaxWidth, ZBuffer.WindowMaxHeight),
+                new Point(ZBuffer.WindowMinWidth, ZBuffer.WindowMaxHeight)));
+            _window.Add(new PolEdge(new Point(ZBuffer.WindowMinWidth, ZBuffer.WindowMaxHeight),
+                new Point(ZBuffer.WindowMinWidth, ZBuffer.WindowMinHeight)));
         }
 
-        private void ClipPolygon()
+        private List<Point> ClipPolygon()
         {
             var polList = new List<Point>();
             var winList = new List<Point>();
@@ -235,6 +239,9 @@ namespace CG_Final
                 }
                 polList.Add(polEdge.Final);
             }
+
+            if (entList.Count == 0)
+                return polList;
 
             winList.Add(_window[0].Init);
             if (dic.ContainsKey(_window[0]))
@@ -286,9 +293,20 @@ namespace CG_Final
                         entList.Remove(p);
                 } while (!Equals(p, entList[0]));
             }
+
+            return clipped;
         }
 
-        private class PolEdge
+        public void Draw()
+        {
+            var clippledObj = ClipPolygon();
+            xmin = clippledObj.Min(p => p.X);
+            xmax = clippledObj.Max(p => p.X);
+            ymin = clippledObj.Max(p => p.Y);
+            ymax = clippledObj.Max(p => p.Y);
+        }
+
+    private class PolEdge
         {
             public Point Init { get; set; }
             public Point Final { get; set; }

@@ -5,25 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-/*
-# | f | f |eae|ead|epe|epd|
-1 | 1 | 2 | 3 | 4 | 2 | 5 |
-2 | 1 | 3 | 1 | 5 | 3 | 6 |
-3 | 1 | 4 | 2 | 6 | 1 | 4 |
-4 | 2 | 4 | 1 | 3 | 7 | 9 |
-5 | 3 | 2 | 2 | 1 | 8 | 7 |
-6 | 4 | 3 | 3 | 2 | 9 | 8 |
-7 | 5 | 2 | 4 | 9 | 5 | 8 |
-8 | 5 | 3 | 5 | 7 | 6 | 9 |
-9 | 5 | 4 | 6 | 8 | 4 | 7 |
-
-    3                   n*3
-    \>                  <-
-                        </  n*3-1
-    />                  <\
-    1                   <- n*3-2
- */
-
 namespace CG_Final
 {
     public class ObjectBase
@@ -44,7 +25,8 @@ namespace CG_Final
         {
             _transformation = new Matrix();
 
-            _transformation.Concatenate(Matrix.TranslationMatrix(150));
+            _transformation.Concatenate(Matrix.XRotationMatrix(90));
+            _transformation.Concatenate(Matrix.TranslationMatrix(100));
 
             Faces = new List<Face>();
             _edges = new List<Edge>();
@@ -59,6 +41,11 @@ namespace CG_Final
             for (var i = 0; i < 6; i++)
                 _vertices.Add(new Vertex());
 
+            InitializeBasicObject();
+        }
+
+        private void InitializeBasicObject()
+        {
             _top = Faces[0];
             _down = Faces[4];
 
@@ -132,6 +119,12 @@ namespace CG_Final
 
             if (Faces.Count > 5)
                 Faces.RemoveRange(5, Faces.Count - 5);
+
+            if (n == 0)
+            {
+                InitializeBasicObject();
+                return;
+            }
 
             var newv = new List<Vertex>();
             var newe = new List<Edge>();
