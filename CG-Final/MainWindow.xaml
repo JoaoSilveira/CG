@@ -6,6 +6,9 @@
         xmlns:local="clr-namespace:CG_Final"
         mc:Ignorable="d"
         Title="Blenda" Height="720" Width="1280" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Control" Key="A" Command=""></KeyBinding>
+    </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -36,11 +39,62 @@
         </Grid>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="*" MinHeight="220"/>
                 <RowDefinition Height="5"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Stretch" Grid.Row="1"/>
+            <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Stretch" Grid.Row="1" ResizeDirection="Rows"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" MinHeight="50"/>
+                    <RowDefinition Height="*" MinHeight="100"/>
+                </Grid.RowDefinitions>
+                <ListBox x:Name="listBox" Height="100" Margin="5"/>
+                <TabControl x:Name="tabControl" Margin="5" Grid.Row="1" TabStripPlacement="Bottom" >
+                    <TabItem Header="Actions">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                            <Grid Background="#FFE5E5E5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" MinHeight="25"/>
+                                    <RowDefinition Height="*" MinHeight="25"/>
+                                    <RowDefinition Height="*" MinHeight="25"/>
+                                    <RowDefinition Height="*" MinHeight="25"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.Resources>
+                                    <Style TargetType="{x:Type Button}">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="Width" Value="75"/>
+                                        <Setter Property="Height" Value="20"/>
+                                    </Style>
+                                </Grid.Resources>
+                                <Button x:Name="button" Content="New"/>
+                                <Button x:Name="button1" Content="Delete" Grid.Column="1"/>
+                                <Button x:Name="button2" Content="Translate" Grid.Row="1"/>
+                                <Button x:Name="button3" Content="Scale" Grid.Column="1" Grid.Row="1"/>
+                                <Button x:Name="button4" Content="Rotate" Grid.Row="2" />
+                                <Button x:Name="button5" Content="Twist" Grid.Column="1" Grid.Row="2"/>
+                                <Button x:Name="button6" Content="Bend" Grid.Row="3"/>
+                                <Button x:Name="button7" Content="Bevel" Grid.Column="1" Grid.Row="3"/>
+                            </Grid>
+                        </ScrollViewer>
+                    </TabItem>
+                    <TabItem Header="World">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                            <Grid Background="#FFE5E5E5"/>
+                        </ScrollViewer>
+                    </TabItem>
+                    <TabItem Header="Object">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                            <Grid Background="#FFE5E5E5"/>
+                        </ScrollViewer>
+                    </TabItem>
+                </TabControl>
+            </Grid>
         </Grid>
 
     </Grid>

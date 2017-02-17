@@ -59,12 +59,14 @@
     </ApplicationDefinition>
     <Compile Include="Camera.cs" />
     <Compile Include="Commands\CreateNewObject.cs" />
+    <Compile Include="Commands\IObjectCommand.cs" />
     <Compile Include="IDrawer.cs" />
     <Compile Include="Lamp.cs" />
     <Compile Include="ObjectBase.cs" />
     <Compile Include="Properties\Annotations1.cs" />
     <Compile Include="Raster.cs" />
     <Compile Include="Scene.cs" />
+    <Compile Include="WindowVM.cs" />
     <Compile Include="ZBuffer.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -106,6 +108,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Util\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
