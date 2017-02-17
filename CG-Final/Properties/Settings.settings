@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="LineDefaultColor" Type="System.Drawing.Color" Scope="Application">
-      <Value Profile="(Default)">ForestGreen</Value>
+      <Value Profile="(Default)">Black</Value>
     </Setting>
     <Setting Name="CameraDefaultBackground" Type="System.Drawing.Color" Scope="Application">
       <Value Profile="(Default)">LightSkyBlue</Value>

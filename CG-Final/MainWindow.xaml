@@ -19,7 +19,7 @@
             <MenuItem Header="_File"/>
             <MenuItem Header="_Help"/>
         </Menu>
-        <Grid Grid.Column="1" Grid.Row="1">
+        <Grid Grid.Column="1" Grid.Row="1" Background="#FFC0DAE2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
@@ -29,9 +29,18 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Image Source="{Binding Path=CurrentScene.Cam1Source, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MainWindow}}" Margin="0,0,1,1" />
-            <Image Source="{Binding Path=CurrentScene.Cam3Source, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MainWindow}}" Margin="0,1,1,0" Grid.Row="1"/>
-            <Image Grid.Column="1" Source="{Binding Path=CurrentScene.Cam2Source, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MainWindow}}" Margin="1,0,0,1"/>
+            <Image Grid.Row="0" Grid.Column="1" Source="{Binding Path=CurrentScene.Cam2Source, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MainWindow}}" Margin="1,0,0,1"/>
+            <Image Source="{Binding Path=CurrentScene.Cam3Source, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MainWindow}}" Margin="0,1,1,0" Grid.Row="1"
+                   Grid.Column="0" />
             <Image Grid.Column="1" Source="{Binding Path=CurrentScene.Cam4Source, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MainWindow}}" Margin="1,1,0,0" Grid.Row="1"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Stretch" Grid.Row="1"/>
         </Grid>
 
     </Grid>

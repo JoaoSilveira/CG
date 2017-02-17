@@ -154,12 +154,12 @@ namespace CG_Final
         protected IDrawer _drawAction;
         #endregion
 
-        public Camera() : this(new Point(), new Point(z: 100))
+        public Camera() : this(new Point(), new Point(z: 100), new Vector(y: 1))
         {
 
         }
 
-        public Camera(Point p, Point vrp)
+        public Camera(Point p, Point vrp, Vector viewUp)
         {
             _canvas = new ZBuffer();
             _p = p;
@@ -170,7 +170,7 @@ namespace CG_Final
             _worldMaxHeight -= _worldMaxHeight / 2;
             _worldMinWidth = -_worldMaxWidth;
             _worldMinHeight = -_worldMaxHeight;
-            _viewUp = new Vector(1);
+            _viewUp = viewUp;
             _drawAction = new Wireframe(this);
         }
 
@@ -234,6 +234,7 @@ namespace CG_Final
         {
             return _transformationMatrix * p;
         }
+
     }
 
     [Serializable]
@@ -258,11 +259,11 @@ namespace CG_Final
             }
         }
 
-        public PerspectiveCamera() : this(new Point(), new Point(y: 100))
+        public PerspectiveCamera() : this(new Point(), new Point(z: 100), new Vector(y: 1))
         {
         }
 
-        public PerspectiveCamera(Point p, Point vrp) : base(p, vrp)
+        public PerspectiveCamera(Point p, Point vrp, Vector viewUp) : base(p, vrp, viewUp)
         {
             _dp = 90;
         }
@@ -309,6 +310,39 @@ namespace CG_Final
             _points = new Dictionary<Vertex, Point>();
         }
 
+        public void Draw()
+        {
+            var currs = Scene.CurrentScene;
+
+            foreach (var objectBase in currs.Objects)
+            {
+                foreach (var edge in objectBase.Edges)
+                {
+                    if (!_points.ContainsKey(edge.Init))
+                        _points.Add(edge.Init, _owner.TransformPoint(objectBase.TransformVertex(edge.Init)));
+                    if (!_points.ContainsKey(edge.End))
+                        _points.Add(edge.End, _owner.TransformPoint(objectBase.TransformVertex(edge.End)));
+
+                    var line = new Line(_points[edge.Init], _points[edge.End]);
+
+                    line.Draw(_owner.ZBuffer);
+                }
+            }
+
+            _points.Clear();
+        }
+    }
+
+    public class OccultWire
+    {
+        private readonly Camera _owner;
+        private readonly Dictionary<Vertex, Point> _points;
+
+        public OccultWire(Camera owner)
+        {
+            _owner = owner;
+            _points = new Dictionary<Vertex, Point>();
+        }
 
         public void Draw()
         {
@@ -330,6 +364,29 @@ namespace CG_Final
             }
 
             _points.Clear();
+        }
+    }
+
+    public class FlatShading : IDrawer
+    {
+        private readonly Camera _owner;
+
+        public FlatShading(Camera owner)
+        {
+            _owner = owner;
+        }
+
+        public void Draw()
+        {
+            var curs = Scene.CurrentScene;
+
+            foreach (var objectBase in curs.Objects)
+            {
+                foreach (var result in objectBase.Faces.Select(p => new Polygon(p, objectBase, _owner)))
+                {
+                    result.Draw(_owner.ZBuffer);
+                }
+            }
         }
     }
 }

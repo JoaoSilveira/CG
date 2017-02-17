@@ -58,6 +58,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Camera.cs" />
+    <Compile Include="Commands\CreateNewObject.cs" />
     <Compile Include="IDrawer.cs" />
     <Compile Include="Lamp.cs" />
     <Compile Include="ObjectBase.cs" />

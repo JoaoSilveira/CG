@@ -25,7 +25,7 @@ namespace CG_Final.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("ForestGreen")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Black")]
         public global::System.Drawing.Color LineDefaultColor {
             get {
                 return ((global::System.Drawing.Color)(this["LineDefaultColor"]));

@@ -123,27 +123,32 @@ namespace CG_Final
 
                 var x = 0.0;
                 var y = 0.0;
+                var z = 0.0;
 
                 var outcodeOut = outcode0 != 0 ? outcode0 : outcode1;
 
                 if ((outcodeOut & CohenFlags.Top) == CohenFlags.Top)
                 {
                     x = val1.X + (val2.X - val1.X) * (min.Y - val1.Y) / (val2.Y - val1.Y);
+                    z = val1.Z + (val2.Z - val1.Z) * (min.Y - val1.Y) / (val2.Y - val1.Y);
                     y = min.Y;
                 }
                 else if ((outcodeOut & CohenFlags.Bottom) == CohenFlags.Bottom)
                 {
                     x = val1.X + (val2.X - val1.X) * (max.Y - val1.Y) / (val2.Y - val1.Y);
+                    z = val1.Z + (val2.Z - val1.Z) * (max.Y - val1.Y) / (val2.Y - val1.Y);
                     y = max.Y;
                 }
                 else if ((outcodeOut & CohenFlags.Right) == CohenFlags.Right)
                 {
                     y = val1.Y + (val2.Y - val1.Y) * (max.X - val1.X) / (val2.X - val1.X);
+                    z = val1.Z + (val2.Z - val1.Z) * (max.X - val1.X) / (val2.X - val1.X);
                     x = max.X;
                 }
                 else if ((outcodeOut & CohenFlags.Left) == CohenFlags.Left)
                 {
                     y = val1.Y + (val2.Y - val1.Y) * (min.X - val1.X) / (val2.X - val1.X);
+                    z = val1.Z + (val2.Z - val1.Z) * (min.X - val1.X) / (val2.X - val1.X);
                     x = min.X;
                 }
 
@@ -153,12 +158,14 @@ namespace CG_Final
                 {
                     val1.X = x;
                     val1.Y = y;
+                    val1.Z = z;
                     outcode0 = InitFlags(val1, min, max);
                 }
                 else
                 {
                     val2.X = x;
                     val2.Y = y;
+                    val2.Z = z;
                     outcode1 = InitFlags(val2, min, max);
                 }
             }
@@ -186,127 +193,63 @@ namespace CG_Final
 
     class Polygon
     {
-        private double xmin;
-        private double xmax;
-        private double ymin;
-        private double ymax;
         private readonly List<PolEdge> _object;
-        private readonly List<PolEdge> _window;
 
-        public Polygon(Face face)
+        public Polygon(Face face, ObjectBase obj, Camera c)
         {
             _object = new List<PolEdge>();
-            _window = new List<PolEdge>();
+
             foreach (var edge in face.GetEdgesClockWise())
             {
                 _object.Add(edge.Left == face
-                    ? new PolEdge((Point) edge.End, (Point) edge.Init)
-                    : new PolEdge((Point) edge.Init, (Point) edge.End));
+                    ? new PolEdge(c.TransformPoint(obj.TransformVertex(edge.End)), c.TransformPoint(obj.TransformVertex(edge.Init)))
+                    : new PolEdge(c.TransformPoint(obj.TransformVertex(edge.Init)), c.TransformPoint(obj.TransformVertex(edge.End))));
             }
-            _window.Add(new PolEdge(new Point(ZBuffer.WindowMinWidth, ZBuffer.WindowMinHeight),
-                new Point(ZBuffer.WindowMaxWidth, ZBuffer.WindowMinHeight)));
-            _window.Add(new PolEdge(new Point(ZBuffer.WindowMaxWidth, ZBuffer.WindowMinHeight),
-                new Point(ZBuffer.WindowMaxWidth, ZBuffer.WindowMaxHeight)));
-            _window.Add(new PolEdge(new Point(ZBuffer.WindowMaxWidth, ZBuffer.WindowMaxHeight),
-                new Point(ZBuffer.WindowMinWidth, ZBuffer.WindowMaxHeight)));
-            _window.Add(new PolEdge(new Point(ZBuffer.WindowMinWidth, ZBuffer.WindowMaxHeight),
-                new Point(ZBuffer.WindowMinWidth, ZBuffer.WindowMinHeight)));
         }
 
-        private List<Point> ClipPolygon()
+        public void Draw(ZBuffer img)
         {
-            var polList = new List<Point>();
-            var winList = new List<Point>();
-            var entList = new List<Point>();
-            var dic = new Dictionary<PolEdge, List<Point>>();
+            var clipped = _object.Select(p => p.Init).ToList();
 
-            foreach (var polEdge in _object)
+            for (var y = ZBuffer.WindowMinHeight; y < ZBuffer.WindowMaxHeight; y++)
             {
-                foreach (var edge in _window)
+                var nodeX = new List<int>();
+                var points = 0;
+                int index;
+                var j = clipped.Count - 1;
+
+                for (index = 0; index < clipped.Count; index++)
                 {
-                    var inter = polEdge.Intersection(edge);
-
-                    if (inter == null) continue;
-
-                    polList.Add(inter);
-                    if (ZBuffer.Contains(polEdge.Final))
-                        entList.Add(inter);
-
-                    if (!dic.ContainsKey(edge))
-                        dic.Add(edge, new List<Point>());
-                    dic[edge].Add(inter);
-                    break;
+                    if (clipped[index].Y < y && clipped[j].Y >= y || clipped[j].Y < y && clipped[index].Y >= y)
+                    {
+                        nodeX.Insert(points++, (int)(clipped[index].X + (y - clipped[index].Y) / (clipped[j].Y - clipped[index].Y)
+                        * (clipped[j].X - clipped[index].X)));
+                    }
+                    j = index;
                 }
-                polList.Add(polEdge.Final);
-            }
 
-            if (entList.Count == 0)
-                return polList;
+                nodeX = nodeX.OrderBy(p => p).ToList();
 
-            winList.Add(_window[0].Init);
-            if (dic.ContainsKey(_window[0]))
-                winList.AddRange(dic[_window[0]].OrderBy(p => p.X - _window[0].Init.X));
-
-            winList.Add(_window[1].Init);
-            if (dic.ContainsKey(_window[1]))
-                winList.AddRange(dic[_window[1]].OrderBy(p => p.Y - _window[1].Init.Y));
-
-            winList.Add(_window[2].Init);
-            if (dic.ContainsKey(_window[2]))
-                winList.AddRange(dic[_window[2]].OrderBy(p => _window[2].Init.X - p.X));
-
-            winList.Add(_window[3].Init);
-            if (dic.ContainsKey(_window[3]))
-                winList.AddRange(dic[_window[3]].OrderBy(p => _window[3].Init.Y - p.Y));
-
-            dic = null;
-
-            var clipped = new List<Point>();
-
-            var activeList = polList;
-            var otherList = winList;
-
-            while (entList.Count > 0)
-            {
-                var p = entList[0];
-                entList.RemoveAt(0);
-                do
+                for (index = 0; index < points; index += 2)
                 {
-                    clipped.Add(p);
-                    var index = activeList.IndexOf(p);
-                    var last = index;
-                    index++;
-                    index %= activeList.Count;
+                    if (nodeX[index] >= ZBuffer.WindowMaxWidth)
+                        break;
+                    if (nodeX[index + 1] <= ZBuffer.WindowMinWidth)
+                        continue;
 
-                    p = activeList[index];
-                    activeList.RemoveAt(last);
+                    if (nodeX[index] < ZBuffer.WindowMinWidth)
+                        nodeX[index] = ZBuffer.WindowMinWidth;
+                    if (nodeX[index + 1] >= ZBuffer.WindowMaxWidth)
+                        nodeX[index + 1] = ZBuffer.WindowMaxWidth - 1;
 
-                    if (!otherList.Contains(p)) continue;
-
-                    activeList.Remove(p);
-
-                    var aux = activeList;
-                    activeList = otherList;
-                    otherList = aux;
-
-                    if (entList.Contains(p))
-                        entList.Remove(p);
-                } while (!Equals(p, entList[0]));
+                    for (var x = nodeX[index]; x < nodeX[index + 1]; x++)
+                        img.SetPixel(x, y, 0, Color.Blue);
+                }
             }
 
-            return clipped;
         }
 
-        public void Draw()
-        {
-            var clippledObj = ClipPolygon();
-            xmin = clippledObj.Min(p => p.X);
-            xmax = clippledObj.Max(p => p.X);
-            ymin = clippledObj.Max(p => p.Y);
-            ymax = clippledObj.Max(p => p.Y);
-        }
-
-    private class PolEdge
+        private class PolEdge
         {
             public Point Init { get; set; }
             public Point Final { get; set; }
@@ -319,15 +262,125 @@ namespace CG_Final
 
             public Point Intersection(PolEdge pol)
             {
-                var det = (pol.Final.X - pol.Init.X) * (Final.Y - Init.Y) - (pol.Final.Y - pol.Init.Y) * (Final.X - Init.X);
+                return DoesHit(this, pol);
+            }
+
+            private static Point DoesHit(PolEdge a, PolEdge b)
+            {
+                var adx = a.Final.X - a.Init.X;
+                var ady = a.Final.Y - a.Init.Y;
+                var bdx = b.Final.X - b.Init.X;
+                var bdy = b.Final.Y - b.Init.Y;
+                var det = bdx * ady - bdy * adx;
 
                 if (Math.Abs(det) < .00001)
+                {
+                    return null;
+                }
+
+                var s = (bdx * (b.Init.Y - a.Init.Y) - bdy * (b.Init.X - a.Init.X)) / det;
+
+                if (s < 0 || s > 1)
                     return null;
 
-                var u = ((pol.Final.X - pol.Init.X) * (pol.Init.Y - Init.Y) - (pol.Final.Y - pol.Init.Y) * (pol.Init.X - Init.X)) / det;
+                return new Point(a.Init.X + s * (a.Final.X - a.Init.X), a.Init.Y + s * (a.Final.Y - a.Init.Y), a.Init.Z + s * (a.Final.Z - a.Init.Z));
+            }
+        }
+    }
 
+    class WiredPolygon
+    {
+        private readonly List<PolEdge> _object;
 
-                return new Point(Init.X + u * (Final.X - Init.X), Init.X + u * (Final.X - Init.X), Init.X + u * (Final.X - Init.X));
+        public WiredPolygon(Face face, ObjectBase obj, Camera c)
+        {
+            _object = new List<PolEdge>();
+
+            foreach (var edge in face.GetEdgesClockWise())
+            {
+                _object.Add(edge.Left == face
+                    ? new PolEdge(c.TransformPoint(obj.TransformVertex(edge.End)), c.TransformPoint(obj.TransformVertex(edge.Init)))
+                    : new PolEdge(c.TransformPoint(obj.TransformVertex(edge.Init)), c.TransformPoint(obj.TransformVertex(edge.End))));
+            }
+        }
+
+        public void Draw(ZBuffer img)
+        {
+            var backGround = Settings.Default.CameraDefaultBackground;
+            var clipped = _object.Select(p => p.Init).ToList();
+
+            for (var y = ZBuffer.WindowMinHeight; y < ZBuffer.WindowMaxHeight; y++)
+            {
+                var nodeX = new List<int>();
+                var points = 0;
+                int index;
+                var j = clipped.Count - 1;
+
+                for (index = 0; index < clipped.Count; index++)
+                {
+                    if (clipped[index].Y < y && clipped[j].Y >= y || clipped[j].Y < y && clipped[index].Y >= y)
+                    {
+                        nodeX.Insert(points++, (int)(clipped[index].X + (y - clipped[index].Y) / (clipped[j].Y - clipped[index].Y)
+                        * (clipped[j].X - clipped[index].X)));
+                    }
+                    j = index;
+                }
+
+                nodeX = nodeX.OrderBy(p => p).ToList();
+
+                for (index = 0; index < points; index += 2)
+                {
+                    if (nodeX[index] >= ZBuffer.WindowMaxWidth)
+                        break;
+                    if (nodeX[index + 1] <= ZBuffer.WindowMinWidth)
+                        continue;
+
+                    if (nodeX[index] < ZBuffer.WindowMinWidth)
+                        nodeX[index] = ZBuffer.WindowMinWidth;
+                    if (nodeX[index + 1] >= ZBuffer.WindowMaxWidth)
+                        nodeX[index + 1] = ZBuffer.WindowMaxWidth - 1;
+
+                    for (var x = nodeX[index]; x < nodeX[index + 1]; x++)
+                        img.SetPixel(x, y, 0, backGround);
+                }
+            }
+        }
+
+        private class PolEdge
+        {
+            public Point Init { get; set; }
+            public Point Final { get; set; }
+
+            public PolEdge(Point init, Point end)
+            {
+                Init = init;
+                Final = end;
+            }
+
+            public Point Intersection(PolEdge pol)
+            {
+                return DoesHit(this, pol);
+            }
+
+            private static Point DoesHit(PolEdge a, PolEdge b)
+            {
+                var adx = a.Final.X - a.Init.X;
+                var ady = a.Final.Y - a.Init.Y;
+                var bdx = b.Final.X - b.Init.X;
+                var bdy = b.Final.Y - b.Init.Y;
+                var det = bdx * ady - bdy * adx;
+
+                if (Math.Abs(det) < .00001)
+                {
+                    return null;
+                }
+
+                var s = (bdx * (b.Init.Y - a.Init.Y) - bdy * (b.Init.X - a.Init.X)) / det;
+
+                if (s < 0 || s > 1)
+                    return null;
+
+                return new Point(a.Init.X + s * (a.Final.X - a.Init.X), a.Init.Y + s * (a.Final.Y - a.Init.Y), a.Init.Z + s * (a.Final.Z - a.Init.Z));
             }
         }
     }

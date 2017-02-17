@@ -24,9 +24,9 @@ namespace CG_Final
         public ObjectBase()
         {
             _transformation = new Matrix();
-
-            _transformation.Concatenate(Matrix.XRotationMatrix(90));
+            
             _transformation.Concatenate(Matrix.TranslationMatrix(100));
+            //_transformation.Concatenate(Matrix.ScaleMatrix(.00002, .00002, .00002));
 
             Faces = new List<Face>();
             _edges = new List<Edge>();

@@ -35,6 +35,12 @@ namespace CG_Final
 
         public Camera Camera1 => _camera1;
 
+        public Camera Camera2 => _camera2;
+
+        public Camera Camera3 => _camera3;
+
+        public Camera Camera4 => _camera4;
+
         public Color AmbientLight { get; set; }
 
         [XmlArray]
@@ -45,10 +51,10 @@ namespace CG_Final
 
         public Scene()
         {
-            _camera1 = new PerspectiveCamera();
-            _camera2 = new Camera();
-            _camera3 = new Camera();
-            _camera4 = new Camera();
+            _camera1 = new PerspectiveCamera(new Point(), new Point(z: 100), new Vector(y: 1));
+            _camera2 = new Camera(new Point(), new Point(z: 100), new Vector(y: 1));
+            _camera3 = new Camera(new Point(), new Point(y: 100), new Vector(z: -1));
+            _camera4 = new Camera(new Point(), new Point(100), new Vector(y: 1));
 
             _camera1.PropertyChanged += (sender, args) => OnPropertyChanged(nameof(Cam1Source));
             _camera2.PropertyChanged += (sender, args) => OnPropertyChanged(nameof(Cam2Source));

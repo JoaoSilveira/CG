@@ -31,6 +31,9 @@ namespace CG_Final
             Scene.CurrentScene = new Scene();
             InitializeComponent();
             Scene.CurrentScene.Camera1.DrawScene();
+            Scene.CurrentScene.Camera2.DrawScene();
+            Scene.CurrentScene.Camera3.DrawScene();
+            Scene.CurrentScene.Camera4.DrawScene();
         }
     }
 }
