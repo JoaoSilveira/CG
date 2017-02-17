@@ -170,7 +170,7 @@ namespace CG_Final
             _worldMaxHeight -= _worldMaxHeight / 2;
             _worldMinWidth = -_worldMaxWidth;
             _worldMinHeight = -_worldMaxHeight;
-            _viewUp = new Vector(y: 1);
+            _viewUp = new Vector(1);
             _drawAction = new Wireframe(this);
         }
 
@@ -213,7 +213,7 @@ namespace CG_Final
             _transformationMatrix.Concatenate(_sru_src);
         }
 
-        public void DrawScene()
+        public virtual void DrawScene()
         {
             UpdateCameraParameters();
             ApplyMatrices();
@@ -232,7 +232,7 @@ namespace CG_Final
 
         public virtual Point TransformPoint(Point p)
         {
-            return _transformationMatrix*p;
+            return _transformationMatrix * p;
         }
     }
 
@@ -258,13 +258,13 @@ namespace CG_Final
             }
         }
 
-        public PerspectiveCamera() : this (new Point(), new Point(z: 100))
+        public PerspectiveCamera() : this(new Point(), new Point(y: 100))
         {
         }
 
         public PerspectiveCamera(Point p, Point vrp) : base(p, vrp)
         {
-            _dp = 50;
+            _dp = 90;
         }
 
         protected override void UpdateCameraParameters()
@@ -291,7 +291,7 @@ namespace CG_Final
             var point = _sru_src * p;
             var z = point.Z;
 
-            point = _transformationMatrix * p;
+            point = _transformationMatrix * point;
             point.Z = z;
 
             return point;
@@ -319,9 +319,9 @@ namespace CG_Final
                 foreach (var edge in objectBase.Edges)
                 {
                     if (!_points.ContainsKey(edge.Init))
-                        _points.Add(edge.Init, _owner.TransformPoint((Point) edge.Init));
+                        _points.Add(edge.Init, _owner.TransformPoint(objectBase.TransformVertex(edge.Init)));
                     if (!_points.ContainsKey(edge.End))
-                        _points.Add(edge.End, _owner.TransformPoint((Point) edge.End));
+                        _points.Add(edge.End, _owner.TransformPoint(objectBase.TransformVertex(edge.End)));
 
                     var line = new Line(_points[edge.Init], _points[edge.End]);
 

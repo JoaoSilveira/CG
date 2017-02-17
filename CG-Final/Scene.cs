@@ -41,7 +41,7 @@ namespace CG_Final
         public List<Lamp> Lamps { get; set; }
 
         [XmlArray]
-        public List<ObjectBase> Objects { get; set; } 
+        public List<ObjectBase> Objects { get; set; }
 
         public Scene()
         {
@@ -58,6 +58,7 @@ namespace CG_Final
             Lamps = new List<Lamp>();
             Objects = new List<ObjectBase>();
             Objects.Add(new ObjectBase());
+            Objects[0].ChangeVertices(8);
         }
 
         public BitmapSource Convert(Bitmap bitmap)

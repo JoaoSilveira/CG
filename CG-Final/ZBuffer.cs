@@ -9,10 +9,13 @@ namespace CG_Final
         public const int Width = 490;
         public const int Height = 330;
 
-        public static int WindowMinWidth = 0;
-        public static int WindowMinHeight = 0;
-        public static int WindowMaxWidth = Width;
-        public static int WindowMaxHeight = Height;
+        public const int WindowMinWidth = 0;
+        public const int WindowMinHeight = 0;
+        public const int WindowMaxWidth = Width;
+        public const int WindowMaxHeight = Height;
+
+        public static readonly Point MinSize = new Point(WindowMinWidth, WindowMinHeight);
+        public static readonly Point MaxSize = new Point(WindowMaxWidth - 1, WindowMaxHeight - 1);
 
         public static Color BackGroundColor;
 
@@ -45,6 +48,11 @@ namespace CG_Final
 
             Bitmap.SetPixel(x, y, color);
             Depth[y, x] = depth;
+        }
+
+        public static bool Contains(Point p)
+        {
+            return p.X >= WindowMinWidth && p.X < WindowMaxWidth && p.Y >= WindowMinHeight && p.Y < WindowMaxHeight;
         }
     }
 }
