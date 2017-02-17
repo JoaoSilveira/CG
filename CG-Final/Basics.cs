@@ -109,6 +109,7 @@ namespace CG_Final
     [Serializable]
     public class Point
     {
+        private const double e = .00001;
         public double X;
         public double Y;
         public double Z;
@@ -154,7 +155,7 @@ namespace CG_Final
 
         public bool Equals(Point other)
         {
-            return other.X == X && other.Y == Y && other.Z == Z;
+            return Math.Abs(other.X - X) < e && Math.Abs(other.Y - Y) < e && Math.Abs(other.Z - Z) < e;
         }
 
         public override int GetHashCode()
@@ -297,9 +298,9 @@ namespace CG_Final
         {
             return new Matrix
             {
-                [0, 3] = x,
-                [1, 3] = y,
-                [2, 3] = z
+                [3, 0] = x,
+                [3, 1] = y,
+                [3, 2] = z
             };
         }
 
@@ -321,8 +322,8 @@ namespace CG_Final
             return new Matrix
             {
                 [1, 1] = cos,
-                [1, 2] = -sin,
-                [2, 1] = sin,
+                [2, 1] = -sin,
+                [1, 2] = sin,
                 [2, 2] = cos
             };
         }
@@ -335,8 +336,8 @@ namespace CG_Final
             return new Matrix
             {
                 [0, 0] = cos,
-                [0, 2] = sin,
-                [2, 0] = -sin,
+                [2, 0] = sin,
+                [0, 2] = -sin,
                 [2, 2] = cos
             };
         }
@@ -349,8 +350,8 @@ namespace CG_Final
             return new Matrix
             {
                 [0, 0] = cos,
-                [0, 1] = -sin,
-                [1, 0] = sin,
+                [1, 0] = -sin,
+                [0, 1] = sin,
                 [1, 1] = cos
             };
         }
@@ -446,6 +447,20 @@ namespace CG_Final
             {
                 list.Add(e);
                 e = e.Left == this ? e.UpperLeft : e.LowerRight;
+            } while (e != Edge);
+
+            return list;
+        }
+
+        public List<Edge> GetEdgesClockWise()
+        {
+            var e = Edge;
+            var list = new List<Edge>();
+
+            do
+            {
+                list.Add(e);
+                e = e.Left == this ? e.LowerLeft : e.UpperRight;
             } while (e != Edge);
 
             return list;
