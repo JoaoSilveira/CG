@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -16,11 +18,28 @@ namespace CG_Final
     {
         public static Scene CurrentScene { get; set; }
 
-        private readonly Camera _camera1;
-        private readonly Camera _camera2;
-        private readonly Camera _camera3;
-        private readonly Camera _camera4;
+        private Camera _camera1;
+        private Camera _camera2;
+        private Camera _camera3;
+        private Camera _camera4;
+        public event PropertyChangedEventHandler PropertyChanged;
 
+        private string _title;
+
+        public string Title
+        {
+            get { return _title; }
+            set
+            {
+                if (_title != null && _title.Equals(value, StringComparison.InvariantCultureIgnoreCase))
+                    return;
+                _title = value;
+                OnPropertyChanged(nameof(Title));
+            }
+        }
+
+
+        #region Camera Properties
         [XmlIgnore]
         public ImageSource Cam1Source => Convert(_camera1.ZBuffer.Bitmap);
 
@@ -39,7 +58,8 @@ namespace CG_Final
 
         public Camera Camera3 => _camera3;
 
-        public Camera Camera4 => _camera4;
+        public Camera Camera4 => _camera4; 
+        #endregion
 
         public Color AmbientLight { get; set; }
 
@@ -47,7 +67,7 @@ namespace CG_Final
         public List<Lamp> Lamps { get; set; }
 
         [XmlArray]
-        public List<ObjectBase> Objects { get; set; }
+        public ObservableCollection<ObjectBase> Objects { get; set; }
 
         public Scene()
         {
@@ -62,8 +82,15 @@ namespace CG_Final
             _camera4.PropertyChanged += (sender, args) => OnPropertyChanged(nameof(Cam4Source));
 
             Lamps = new List<Lamp>();
-            Objects = new List<ObjectBase>();
-            Objects.Add(new ObjectBase());
+            Objects = new ObservableCollection<ObjectBase> {new ObjectBase()};
+            Title = "Untitled";
+        }
+
+        public ObjectBase CreateNew()
+        {
+            var o = new ObjectBase();
+            Objects.Add(o);
+            return o;
         }
 
         public BitmapSource Convert(Bitmap bitmap)
@@ -75,7 +102,17 @@ namespace CG_Final
                   BitmapSizeOptions.FromEmptyOptions());
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public async Task Redraw()
+        {
+            Camera1.ZBuffer.Clear();
+            Camera1.DrawScene();
+            Camera2.ZBuffer.Clear();
+            Camera2.DrawScene();
+            Camera3.ZBuffer.Clear();
+            Camera3.DrawScene();
+            Camera4.ZBuffer.Clear();
+            Camera4.DrawScene();
+        }
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged(string propertyName)

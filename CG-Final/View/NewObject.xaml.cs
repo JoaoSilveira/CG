@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,20 +12,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using CG_Final.Annotations;
 
-namespace CG_Final
+namespace CG_Final.View
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for NewObject.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class NewObject : UserControl
     {
-        public Scene CurrentScene => Scene.CurrentScene;
-
-        public MainWindow()
+        public NewObject()
         {
-            Scene.CurrentScene = new Scene();
             InitializeComponent();
         }
     }

@@ -5,10 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CG_Final"
         mc:Ignorable="d"
-        Title="Blenda" Height="720" Width="1280" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        xmlns:cmd="clr-namespace:CG_Final.Commands"
+        xmlns:vie="clr-namespace:CG_Final.View"
+        Title="{Binding CurrentScene.Title, Converter={StaticResource TitleConverter}}" Height="720" Width="1280" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type cmd:CreateNewObject}">
+            <vie:NewObject DataContext="{Binding Content, ElementName=CommandContent}"/>
+        </DataTemplate>
+    </Window.Resources>
     <Window.InputBindings>
-        <KeyBinding Modifiers="Control" Key="A" Command=""></KeyBinding>
+        <KeyBinding Key="N" Command="{Binding NewObjectCommand}"/>
     </Window.InputBindings>
+    <Window.DataContext>
+        <local:WindowVM x:Name="WindowDataContext"/>
+    </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -49,7 +59,7 @@
                     <RowDefinition Height="Auto" MinHeight="50"/>
                     <RowDefinition Height="*" MinHeight="100"/>
                 </Grid.RowDefinitions>
-                <ListBox x:Name="listBox" Height="100" Margin="5"/>
+                <ListBox x:Name="listBox" Height="100" Margin="5" ItemsSource="{Binding CurrentScene.Objects}" SelectedItem="{Binding SelectedObject, Mode=TwoWay}"/>
                 <TabControl x:Name="tabControl" Margin="5" Grid.Row="1" TabStripPlacement="Bottom" >
                     <TabItem Header="Actions">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
@@ -72,8 +82,8 @@
                                         <Setter Property="Height" Value="20"/>
                                     </Style>
                                 </Grid.Resources>
-                                <Button x:Name="button" Content="New"/>
-                                <Button x:Name="button1" Content="Delete" Grid.Column="1"/>
+                                <Button x:Name="button" Content="New" Command="{Binding NewObjectCommand}"/>
+                                <Button x:Name="button1" Content="Delete" Grid.Column="1" Command="{Binding DeleteObjectCommand}"/>
                                 <Button x:Name="button2" Content="Translate" Grid.Row="1"/>
                                 <Button x:Name="button3" Content="Scale" Grid.Column="1" Grid.Row="1"/>
                                 <Button x:Name="button4" Content="Rotate" Grid.Row="2" />
@@ -95,6 +105,7 @@
                     </TabItem>
                 </TabControl>
             </Grid>
+            <ContentControl Grid.Row="2" x:Name="CommandContent" Margin="5" Content="{Binding LastCommand}"/>
         </Grid>
 
     </Grid>

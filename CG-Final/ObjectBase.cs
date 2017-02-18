@@ -9,7 +9,8 @@ namespace CG_Final
 {
     public class ObjectBase
     {
-        public static int InitialVertices = 3;
+        public static int count = 0;
+        public const int InitialVertices = 3;
 
         private readonly Matrix _transformation;
         private Face _top;
@@ -20,13 +21,12 @@ namespace CG_Final
         public List<Face> Faces { get; }
         public List<Edge> Edges => _edges;
         public List<Vertex> Vertices => _vertices;
+        public int Id { get; }
 
         public ObjectBase()
         {
+            Id = count++;
             _transformation = new Matrix();
-            
-            _transformation.Concatenate(Matrix.TranslationMatrix(100));
-            //_transformation.Concatenate(Matrix.ScaleMatrix(.00002, .00002, .00002));
 
             Faces = new List<Face>();
             _edges = new List<Edge>();
@@ -274,6 +274,11 @@ namespace CG_Final
         public Point TransformVertex(Vertex v)
         {
             return _transformation * (Point)v;
+        }
+
+        public override string ToString()
+        {
+            return $"Object - {Id}";
         }
     }
 }

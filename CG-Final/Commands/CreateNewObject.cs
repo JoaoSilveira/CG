@@ -1,17 +1,20 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using CG_Final.Annotations;
+using CG_Final.Util;
 
 namespace CG_Final.Commands
 {
-    public class CreateNewObject : INotifyPropertyChanged, IObjectCommand
+    public class CreateNewObject : ModelBase, IObjectCommand, IValueConverter
     {
         public const int MaxVertices = 17;
         private int _vertices;
-        private ObjectBase _obj;
+        private readonly ObjectBase _obj;
 
         public int Vertices
         {
@@ -20,19 +23,24 @@ namespace CG_Final.Commands
             {
                 if (value > MaxVertices)
                     return;
-                if (value < 0 || value == _vertices)
+                if (value < 0)
                     return;
 
-                _vertices = value;
-                OnPropertyChanged();
+                SetProperty(ref _vertices, value);
             }
         }
 
-        public CreateNewObject(IInputElement owner)
+        public CreateNewObject(IInputElement owner, ObjectBase obj)
         {
             owner.MouseWheel += Owner_MouseWheel;
             owner.KeyUp += Owner_KeyUp;
-            PropertyChanged += (o, e) => _obj.ChangeVertices(Vertices);
+            PropertyChanged += (o, e) =>
+            {
+                _obj.ChangeVertices(Vertices);
+                Scene.CurrentScene.Redraw();
+            };
+            _obj = obj;
+            Vertices = 0;
         }
 
         private void Owner_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
@@ -61,14 +69,6 @@ namespace CG_Final.Commands
                 --Vertices;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         public void Deactivate(IInputElement e)
         {
             e.KeyUp -= Owner_KeyUp;
@@ -81,5 +81,22 @@ namespace CG_Final.Commands
         }
 
         public event Action OnApply;
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            int val;
+            if (int.TryParse(value.ToString(), out val))
+                return val - 3;
+
+            return Vertices;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is int)
+                return (Vertices + 3).ToString();
+
+            throw new ArgumentException();
+        }
     }
 }

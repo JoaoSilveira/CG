@@ -26,3 +26,7 @@ C:\Users\jairluiz\Source\Repos\CG\CG-Final\obj\Debug\MainWindow.baml
 C:\Users\jairluiz\Source\Repos\CG\CG-Final\obj\Debug\CG-Final.g.resources
 C:\Users\jairluiz\Source\Repos\CG\CG-Final\obj\Debug\CG_Final.Properties.Resources.resources
 C:\Users\jairluiz\Source\Repos\CG\CG-Final\obj\Debug\CG-Final.csproj.GenerateResource.Cache
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\View\NewObject.g.cs
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\View\NewObject.baml
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\App.baml
