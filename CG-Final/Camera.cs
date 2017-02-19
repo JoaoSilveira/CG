@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using CG_Final.Properties;
 
 namespace CG_Final
 {
@@ -313,6 +314,7 @@ namespace CG_Final
         public void Draw()
         {
             var currs = Scene.CurrentScene;
+            var color = Settings.Default.LineDefaultColor;
 
             foreach (var objectBase in currs.Objects)
             {
@@ -323,9 +325,7 @@ namespace CG_Final
                     if (!_points.ContainsKey(edge.End))
                         _points.Add(edge.End, _owner.TransformPoint(objectBase.TransformVertex(edge.End)));
 
-                    var line = new Line(_points[edge.Init], _points[edge.End]);
-
-                    line.Draw(_owner.ZBuffer);
+                    _owner.ZBuffer.DrawLine(_points[edge.Init], _points[edge.End], color);
                 }
             }
 
@@ -347,6 +347,7 @@ namespace CG_Final
         public void Draw()
         {
             var currs = Scene.CurrentScene;
+            var color = Settings.Default.LineDefaultColor;
 
             foreach (var objectBase in currs.Objects)
             {
@@ -357,9 +358,7 @@ namespace CG_Final
                     if (!_points.ContainsKey(edge.End))
                         _points.Add(edge.End, _owner.TransformPoint(objectBase.TransformVertex(edge.End)));
 
-                    var line = new Line(_points[edge.Init], _points[edge.End]);
-
-                    line.Draw(_owner.ZBuffer);
+                    _owner.ZBuffer.DrawLine(_points[edge.Init], _points[edge.End], color);
                 }
             }
 

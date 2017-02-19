@@ -12,7 +12,7 @@
             <ColumnDefinition Width="37*"/>
         </Grid.ColumnDefinitions>
         <Label x:Name="label" Content="Vertices:" Margin="10" VerticalAlignment="Top" />
-        <TextBox x:Name="textBox" Grid.Column="1" Margin="10" TextWrapping="Wrap" VerticalAlignment="Top" Height="{Binding ActualHeight, ElementName=label, Mode=OneWay}" VerticalContentAlignment="Center" Text="{Binding Vertices, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox x:Name="textBox" Grid.Column="1" Margin="10" TextWrapping="Wrap" VerticalAlignment="Top" Height="{Binding ActualHeight, ElementName=label, Mode=OneWay}" VerticalContentAlignment="Center" Text="{Binding Vertices, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource VerticesConverter}}"/>
 
     </Grid>
 </UserControl>

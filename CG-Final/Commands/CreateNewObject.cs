@@ -10,7 +10,7 @@ using CG_Final.Util;
 
 namespace CG_Final.Commands
 {
-    public class CreateNewObject : ModelBase, IObjectCommand, IValueConverter
+    public class CreateNewObject : ModelBase, IObjectCommand
     {
         public const int MaxVertices = 17;
         private int _vertices;
@@ -81,22 +81,5 @@ namespace CG_Final.Commands
         }
 
         public event Action OnApply;
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            int val;
-            if (int.TryParse(value.ToString(), out val))
-                return val - 3;
-
-            return Vertices;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is int)
-                return (Vertices + 3).ToString();
-
-            throw new ArgumentException();
-        }
     }
 }

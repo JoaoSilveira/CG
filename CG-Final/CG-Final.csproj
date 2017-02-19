@@ -71,6 +71,7 @@
     <Compile Include="Util\Command.cs" />
     <Compile Include="Util\ModelBase.cs" />
     <Compile Include="Util\ValueChangedEventArgs.cs" />
+    <Compile Include="Util\VerticesConverter.cs" />
     <Compile Include="View\NewObject.xaml.cs">
       <DependentUpon>NewObject.xaml</DependentUpon>
     </Compile>

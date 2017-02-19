@@ -24,82 +24,51 @@ namespace CG_Final
         }
     }
 
-    // DESOCULTADO \o/
-    class Line
+    public static class LineDrawer
     {
-        private Point _initPoint;
-        private Point _endPoint;
-
-        // NOT the president
-        public Color Color { get; set; }
-
-        public Point InitPoint
+        public static void DrawLine(this ZBuffer img, Point initPoint, Point endPoint, Color color)
         {
-            get { return _initPoint; }
-            set { _initPoint = value; }
-        }
-
-        public Point EndPoint
-        {
-            get { return _endPoint; }
-            set { _endPoint = value; }
-        }
-
-
-        public Line(Point init, Point end)
-        {
-            InitPoint = new Point(init.X, init.Y);
-            EndPoint = new Point(end.X, end.Y);
-            Color = Settings.Default.LineDefaultColor;
-        }
-
-        public void Draw(ZBuffer img)
-        {
-            if (!Clip(ref _initPoint, ref _endPoint, ZBuffer.MinSize, ZBuffer.MaxSize))
+            var init = new Point(initPoint.X, initPoint.Y, initPoint.Z);
+            var end = new Point(endPoint.X, endPoint.Y, endPoint.Z);
+            if (!Clip(ref init, ref end, ZBuffer.MinSize, ZBuffer.MaxSize))
                 return;
 
-            MidpointLine((int)InitPoint.X, (int)InitPoint.Y, (int)EndPoint.X, (int)EndPoint.Y, img);
-        }
+            var x = (int)init.X;
+            var y = (int)init.Y;
+            var z = init.Z;
 
-        private void MidpointLine(int x, int y, int x2, int y2, ZBuffer img)
-        {
-            var w = x2 - x;
-            var h = y2 - y;
-            var dx1 = 0;
-            var dy1 = 0;
-            var dx2 = 0;
-            var dy2 = 0;
-            if (w < 0) dx1 = -1; else if (w > 0) dx1 = 1;
-            if (h < 0) dy1 = -1; else if (h > 0) dy1 = 1;
-            if (w < 0) dx2 = -1; else if (w > 0) dx2 = 1;
+            var xf = (int)end.X;
+            var yf = (int)end.Y;
 
-            var longest = Math.Abs(w);
-            var shortest = Math.Abs(h);
+            var dx = Math.Abs(xf - x);
+            var sx = x < xf ? 1 : -1;
+            var dy = Math.Abs(yf - y);
+            var sy = y < yf ? 1 : -1;
+            var err = (dx > dy ? dx : -dy) / 2;
+            var txz = (end.Z - init.Z) / (dx == 0 ? 1 : dx);
+            var tyz = (end.Z - init.Z) / (dy == 0 ? 1 : dy);
 
-            if (!(longest > shortest))
+            while (true)
             {
-                longest = Math.Abs(h);
-                shortest = Math.Abs(w);
-                if (h < 0) dy2 = -1;
-                else if (h > 0) dy2 = 1;
-                dx2 = 0;
-            }
-            var numerator = longest >> 1;
-            for (var i = 0; i <= longest; i++)
-            {
-                img.SetPixel(x, y, 0, Color);
-                numerator += shortest;
-                if (!(numerator < longest))
+                img.SetPixel(x, y, z, color);
+                if (x == xf && y == yf)
+                    break;
+
+                var e2 = err;
+
+                if (e2 > -dx)
                 {
-                    numerator -= longest;
-                    x += dx1;
-                    y += dy1;
+                    err -= dy;
+                    x += sx;
+                    z += txz;
                 }
-                else
-                {
-                    x += dx2;
-                    y += dy2;
-                }
+
+                if (e2 >= dy)
+                    continue;
+
+                err += dx;
+                y += sy;
+                z += tyz;
             }
         }
 
@@ -152,8 +121,6 @@ namespace CG_Final
                     x = min.X;
                 }
 
-                // Now we move outside point to intersection point to clip
-                // and get ready for next pass.
                 if (outcodeOut == outcode0)
                 {
                     val1.X = x;
@@ -191,6 +158,15 @@ namespace CG_Final
         }
     }
 
+    public static class PolygonDrawer
+    {
+        public static void DrawPolygon(this ZBuffer img, Color color, params Point[] points)
+        {
+            
+        }
+
+        private static List<Point> 
+    }
     class Polygon
     {
         private readonly List<PolEdge> _object;
@@ -201,9 +177,7 @@ namespace CG_Final
 
             foreach (var edge in face.GetEdgesClockWise())
             {
-                _object.Add(edge.Left == face
-                    ? new PolEdge(c.TransformPoint(obj.TransformVertex(edge.End)), c.TransformPoint(obj.TransformVertex(edge.Init)))
-                    : new PolEdge(c.TransformPoint(obj.TransformVertex(edge.Init)), c.TransformPoint(obj.TransformVertex(edge.End))));
+                _object.Add(edge.Left == face ? new PolEdge(c.TransformPoint(obj.TransformVertex(edge.End)), c.TransformPoint(obj.TransformVertex(edge.Init))) : new PolEdge(c.TransformPoint(obj.TransformVertex(edge.Init)), c.TransformPoint(obj.TransformVertex(edge.End))));
             }
         }
 
@@ -222,8 +196,7 @@ namespace CG_Final
                 {
                     if (clipped[index].Y < y && clipped[j].Y >= y || clipped[j].Y < y && clipped[index].Y >= y)
                     {
-                        nodeX.Insert(points++, (int)(clipped[index].X + (y - clipped[index].Y) / (clipped[j].Y - clipped[index].Y)
-                        * (clipped[j].X - clipped[index].X)));
+                        nodeX.Insert(points++, (int)(clipped[index].X + (y - clipped[index].Y) / (clipped[j].Y - clipped[index].Y) * (clipped[j].X - clipped[index].X)));
                     }
                     j = index;
                 }
@@ -246,7 +219,6 @@ namespace CG_Final
                         img.SetPixel(x, y, 0, Color.Blue);
                 }
             }
-
         }
 
         private class PolEdge
@@ -298,9 +270,7 @@ namespace CG_Final
 
             foreach (var edge in face.GetEdgesClockWise())
             {
-                _object.Add(edge.Left == face
-                    ? new PolEdge(c.TransformPoint(obj.TransformVertex(edge.End)), c.TransformPoint(obj.TransformVertex(edge.Init)))
-                    : new PolEdge(c.TransformPoint(obj.TransformVertex(edge.Init)), c.TransformPoint(obj.TransformVertex(edge.End))));
+                _object.Add(edge.Left == face ? new PolEdge(c.TransformPoint(obj.TransformVertex(edge.End)), c.TransformPoint(obj.TransformVertex(edge.Init))) : new PolEdge(c.TransformPoint(obj.TransformVertex(edge.Init)), c.TransformPoint(obj.TransformVertex(edge.End))));
             }
         }
 
@@ -320,8 +290,7 @@ namespace CG_Final
                 {
                     if (clipped[index].Y < y && clipped[j].Y >= y || clipped[j].Y < y && clipped[index].Y >= y)
                     {
-                        nodeX.Insert(points++, (int)(clipped[index].X + (y - clipped[index].Y) / (clipped[j].Y - clipped[index].Y)
-                        * (clipped[j].X - clipped[index].X)));
+                        nodeX.Insert(points++, (int)(clipped[index].X + (y - clipped[index].Y) / (clipped[j].Y - clipped[index].Y) * (clipped[j].X - clipped[index].X)));
                     }
                     j = index;
                 }
@@ -343,6 +312,11 @@ namespace CG_Final
                     for (var x = nodeX[index]; x < nodeX[index + 1]; x++)
                         img.SetPixel(x, y, 0, backGround);
                 }
+            }
+
+            foreach (var polEdge in _object.Select(p => new Line(p.Init, p.Final)))
+            {
+                polEdge.Draw(img);
             }
         }
 
@@ -388,6 +362,10 @@ namespace CG_Final
     [Flags]
     public enum CohenFlags : byte
     {
-        Left = 0x01, Right = 0x02, Top = 0x10, Bottom = 0x20, None = 0
+        Left = 0x01,
+        Right = 0x02,
+        Top = 0x10,
+        Bottom = 0x20,
+        None = 0
     }
 }

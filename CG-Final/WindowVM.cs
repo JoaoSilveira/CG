@@ -49,6 +49,9 @@ namespace CG_Final
 
         private void DeleteObject()
         {
+            LastCommand?.Deactivate(Application.Current.MainWindow);
+            LastCommand = null;
+
             var index = CurrentScene.Objects.IndexOf(SelectedObject);
             CurrentScene.Objects.RemoveAt(index);
 
@@ -61,11 +64,13 @@ namespace CG_Final
             else
                 SelectedObject = null;
             DeleteObjectCommand.RaiseCanExecuteChanged();
+
             CurrentScene.Redraw();
         }
 
         private void NewObject()
         {
+            LastCommand?.Deactivate(Application.Current.MainWindow);
             var o = CurrentScene.CreateNew();
             LastCommand = new CreateNewObject(Application.Current.MainWindow, o);
             SelectedObject = o;

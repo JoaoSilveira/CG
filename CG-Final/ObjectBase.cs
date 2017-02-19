@@ -9,24 +9,31 @@ namespace CG_Final
 {
     public class ObjectBase
     {
-        public static int count = 0;
         public const int InitialVertices = 3;
 
-        private readonly Matrix _transformation;
-        private Face _top;
-        private Face _down;
+        public static int count = 0;
 
+        #region Fields
+        private readonly Matrix _transformation;
         private readonly List<Vertex> _vertices;
         private readonly List<Edge> _edges;
+        private Face _top;
+        private Face _down;
+        #endregion
+
+        #region Properties
+        public int Id { get; }
         public List<Face> Faces { get; }
         public List<Edge> Edges => _edges;
-        public List<Vertex> Vertices => _vertices;
-        public int Id { get; }
+        public List<Vertex> Vertices => _vertices; 
+        #endregion
 
         public ObjectBase()
         {
             Id = count++;
             _transformation = new Matrix();
+
+            _transformation.Concatenate(Matrix.TranslationMatrix(120));
 
             Faces = new List<Face>();
             _edges = new List<Edge>();

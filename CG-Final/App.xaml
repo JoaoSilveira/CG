@@ -6,5 +6,6 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          <conv:TitleConverter x:Key="TitleConverter"/>
+         <conv:VerticesConverter x:Key="VerticesConverter"/>
     </Application.Resources>
 </Application>

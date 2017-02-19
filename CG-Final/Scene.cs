@@ -38,7 +38,6 @@ namespace CG_Final
             }
         }
 
-
         #region Camera Properties
         [XmlIgnore]
         public ImageSource Cam1Source => Convert(_camera1.ZBuffer.Bitmap);

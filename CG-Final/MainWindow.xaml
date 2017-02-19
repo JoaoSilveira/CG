@@ -15,6 +15,7 @@
     </Window.Resources>
     <Window.InputBindings>
         <KeyBinding Key="N" Command="{Binding NewObjectCommand}"/>
+        <KeyBinding Key="X" Command="{Binding DeleteObjectCommand}"/>
     </Window.InputBindings>
     <Window.DataContext>
         <local:WindowVM x:Name="WindowDataContext"/>
@@ -99,6 +100,13 @@
                         </ScrollViewer>
                     </TabItem>
                     <TabItem Header="Object">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                            <Grid Background="#FFE5E5E5">
+                                <ContentControl Content="{Binding SelectedObject}"/>
+                            </Grid>
+                        </ScrollViewer>
+                    </TabItem>
+                    <TabItem Header="Modifiers">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                             <Grid Background="#FFE5E5E5"/>
                         </ScrollViewer>
