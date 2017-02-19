@@ -140,7 +140,7 @@ namespace CG_Final
             return accept;
         }
 
-        private static CohenFlags InitFlags(Point p, Point min, Point max)
+        public static CohenFlags InitFlags(Point p, Point min, Point max)
         {
             var code = CohenFlags.None;
 
@@ -160,13 +160,239 @@ namespace CG_Final
 
     public static class PolygonDrawer
     {
+        public static void DrawWiredPolygon(this ZBuffer img, Color color, List<Point> points)
+        {
+            if (points.Count < 3)
+                return;
+
+            var a = points[2] - points[1];
+            var b = points[0] - points[1];
+            var normal = b.VectorialProduct(a);
+            normal.Normalize();
+
+            if (normal.Z <= 0)
+                return;
+
+            var p = points.Last();
+
+            foreach (var point in points)
+            {
+                img.DrawLine(p, point, color);
+                p = point;
+            }
+        }
+        
         public static void DrawPolygon(this ZBuffer img, Color color, params Point[] points)
         {
-            
+            if (points.Length < 3)
+                return;
+
+            var a = points[2] - points[1];
+            var b = points[0] - points[1];
+            var normal = b.VectorialProduct(a);
+            normal.Normalize();
+
+            if (normal.Z <= 0)
+                return;
+
+            var poly = Clip(points, ZBuffer.MinSize, ZBuffer.MaxSize);
+
+            var last = poly.Last();
+
+            var ymax = 0;
+            var ymin = ZBuffer.Height;
+            var xmax = 0;
+            var xmin = ZBuffer.Width;
+
+            foreach (var point in poly)
+            {
+                if (point.X < xmin)
+                    xmin = (int)point.X;
+                if (point.X > xmax)
+                    xmax = (int)point.X;
+                if (point.Y < ymin)
+                    ymin = (int)point.Y;
+                if (point.Y > ymax)
+                    ymax = (int)point.Y;
+            }
+
+            Draw(img, color, xmin, xmax, ymin, ymax, poly);
         }
 
-        private static List<Point> 
+        private static void Draw(ZBuffer img, Color color, int xmin, int xmax, int ymin, int ymax, List<Point> clipped)
+        {
+            for (var y = ymin; y < ymax; y++)
+            {
+                var inter = new List<Point>();
+                int index;
+                var j = clipped.Count - 1;
+
+                for (index = 0; index < clipped.Count; index++)
+                {
+                    if (clipped[index].Y < y && clipped[j].Y >= y || clipped[j].Y < y && clipped[index].Y >= y)
+                    {
+                        var pt = DoesHit(clipped[j], clipped[index], new Point(0, y), new Point(ZBuffer.Width - 1, y));
+
+                        if (pt != null)
+                            inter.Add(pt);
+                    }
+                    j = index;
+                }
+
+                inter = inter.OrderBy(p => p.X).ToList();
+
+                for (index = 0; index < inter.Count; index += 2)
+                {
+                    var z = inter[index].Z;
+                    var tx = (inter[index + 1].Z - inter[index].Z) / (inter[index + 1].X - inter[index].X);
+                    var end = (int) inter[index + 1].X;
+                    for (var x = (int) inter[index].X; x < end; x++)
+                    {
+                        img.SetPixel(x, y, z, color);
+                        z += tx;
+                    }
+                }
+            }
+        }
+
+        private static List<Point> Clip(Point[] points, Point min, Point max)
+        {
+            var flag = false;
+
+            var list = points.Select(p =>
+            {
+                var pointFlag = LineDrawer.InitFlags(p, ZBuffer.MinSize, ZBuffer.MaxSize);
+
+                if (pointFlag != CohenFlags.None)
+                    flag = true;
+
+                return new CohenPoint(pointFlag, p.X, p.Y, p.Z);
+            }).ToList();
+
+            if (!flag)
+                return points.ToList();
+
+            var clippedList = new List<CohenPoint>();
+
+            while (flag)
+            {
+                var p0 = list.Last();
+                flag = false;
+
+                foreach (var point in list)
+                {
+                    redo:
+                    // aceito trivialmente
+                    if ((p0.Flags | point.Flags) == CohenFlags.None)
+                    {
+                        clippedList.Add(point);
+                        p0 = point;
+                        continue;
+                    }
+
+                    // rejeitado trivialmente
+                    if ((p0.Flags & point.Flags) != CohenFlags.None)
+                    {
+                        p0 = point;
+                        continue;
+                    }
+
+                    var x = 0.0;
+                    var y = 0.0;
+                    var z = 0.0;
+
+                    var outcodeOut = p0.Flags != 0 ? p0.Flags : point.Flags;
+
+                    if ((outcodeOut & CohenFlags.Top) == CohenFlags.Top)
+                    {
+                        x = p0.X + (point.X - p0.X) * (min.Y - p0.Y) / (point.Y - p0.Y);
+                        z = p0.Z + (point.Z - p0.Z) * (min.Y - p0.Y) / (point.Y - p0.Y);
+                        y = min.Y;
+                    }
+                    else if ((outcodeOut & CohenFlags.Bottom) == CohenFlags.Bottom)
+                    {
+                        x = p0.X + (point.X - p0.X) * (max.Y - p0.Y) / (point.Y - p0.Y);
+                        z = p0.Z + (point.Z - p0.Z) * (max.Y - p0.Y) / (point.Y - p0.Y);
+                        y = max.Y;
+                    }
+                    else if ((outcodeOut & CohenFlags.Right) == CohenFlags.Right)
+                    {
+                        y = p0.Y + (point.Y - p0.Y) * (max.X - p0.X) / (point.X - p0.X);
+                        z = p0.Z + (point.Z - p0.Z) * (max.X - p0.X) / (point.X - p0.X);
+                        x = max.X;
+                    }
+                    else if ((outcodeOut & CohenFlags.Left) == CohenFlags.Left)
+                    {
+                        y = p0.Y + (point.Y - p0.Y) * (min.X - p0.X) / (point.X - p0.X);
+                        z = p0.Z + (point.Z - p0.Z) * (min.X - p0.X) / (point.X - p0.X);
+                        x = min.X;
+                    }
+
+                    var cohenFlags = p0.Flags;
+                    p0.X = x;
+                    p0.Y = y;
+                    p0.Z = z;
+                    p0.Flags = LineDrawer.InitFlags(new Point(p0.X, p0.Y), min, max);
+
+
+                    if (p0.Flags != CohenFlags.None)
+                        flag = true;
+
+                    clippedList.Add(p0);
+
+                    if (cohenFlags != CohenFlags.None)
+                        goto redo;
+
+                    p0 = point;
+                }
+
+                var aux = list;
+                list = clippedList;
+                clippedList = aux;
+                clippedList.Clear();
+            }
+
+            return list.Select(p => new Point(p.X, p.Y, p.Z)).ToList();
+        }
+
+        private static Point DoesHit(Point aInit, Point aEnd, Point bInit, Point bEnd)
+        {
+            var adx = aEnd.X - aInit.X;
+            var ady = aEnd.Y - aInit.Y;
+            var bdx = bEnd.X - bInit.X;
+            var bdy = bEnd.Y - bInit.Y;
+            var det = bdx * ady - bdy * adx;
+
+            if (Math.Abs(det) < .00001)
+            {
+                return null;
+            }
+
+            var s = (bdx * (bInit.Y - aInit.Y) - bdy * (bInit.X - aInit.X)) / det;
+
+            if (s < 0 || s > 1)
+                return null;
+
+            return new Point(aInit.X + s * (aEnd.X - aInit.X), aInit.Y + s * (aEnd.Y - aInit.Y), aInit.Z + s * (aEnd.Z - aInit.Z));
+        }
+
+        private struct CohenPoint
+        {
+            public CohenFlags Flags;
+            public double X;
+            public double Y;
+            public double Z;
+
+            public CohenPoint(CohenFlags flags, double x, double y, double z)
+            {
+                Flags = flags;
+                X = x;
+                Y = y;
+                Z = z;
+            }
+        }
     }
+
     class Polygon
     {
         private readonly List<PolEdge> _object;
@@ -314,10 +540,10 @@ namespace CG_Final
                 }
             }
 
-            foreach (var polEdge in _object.Select(p => new Line(p.Init, p.Final)))
-            {
-                polEdge.Draw(img);
-            }
+            //foreach (var polEdge in _object.Select(p => new Line(p.Init, p.Final)))
+            //{
+            //    polEdge.Draw(img);
+            //}
         }
 
         private class PolEdge
@@ -366,6 +592,9 @@ namespace CG_Final
         Right = 0x02,
         Top = 0x10,
         Bottom = 0x20,
-        None = 0
+        None = 0,
+        TopBottom = 0x30,
+        LeftRight = 0x03,
+        All = 0x33
     }
 }

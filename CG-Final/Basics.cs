@@ -466,8 +466,29 @@ namespace CG_Final
             return list;
         }
 
+        public List<Vertex> GetVerticesClockWise()
+        {
+            var e = Edge;
+            var list = new List<Vertex>();
+
+            do
+            {
+                list.Add(e.Left == this ? e.Init : e.End);
+                e = e.Left == this ? e.LowerLeft : e.UpperRight;
+            } while (e != Edge);
+
+            return list;
+        }
+
         public Vector NormalVector()
         {
+            //var p3 = (Point)(Edge.Left == this ? Edge.End : Edge.Init);
+            //var p2 = Edge.Left == this ? Edge.Init : Edge.End;
+            //var e = Edge.Left == this ? Edge.LowerLeft : Edge.UpperRight;
+            //var p1 = (Point)(e.Init == p2 ? e.End : e.Init);
+            //return
+            //    Vector.Normalize(
+            //        (p3 - (Point)p2).VectorialProduct(p1 - (Point)p2));
             var b = GetEdgeVector(Edge);
             return
                 Vector.Normalize(

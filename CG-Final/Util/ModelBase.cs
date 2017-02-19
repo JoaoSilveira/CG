@@ -25,5 +25,10 @@ namespace CG_Final.Util
             changedHandler?.Invoke(this, new ValueChangedEventArgs<T>(old, newValue));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public virtual void OnPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 }

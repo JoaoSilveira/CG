@@ -33,8 +33,6 @@ namespace CG_Final
             Id = count++;
             _transformation = new Matrix();
 
-            _transformation.Concatenate(Matrix.TranslationMatrix(120));
-
             Faces = new List<Face>();
             _edges = new List<Edge>();
             _vertices = new List<Vertex>();

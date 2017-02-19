@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using CG_Final.Properties;
+using CG_Final.Util;
 
 namespace CG_Final
 {
     [Serializable]
     [XmlInclude(typeof(PerspectiveCamera))]
-    public class Camera : INotifyPropertyChanged
+    public class Camera : ModelBase
     {
         #region Properties
         public Vector ViewUp
@@ -20,11 +22,7 @@ namespace CG_Final
             get { return _viewUp; }
             set
             {
-                if (value.Equals(_viewUp))
-                    return;
-
-                _viewUp = value;
-                UpdateCameraParameters();
+                SetProperty(ref _viewUp, value);
             }
         }
 
@@ -42,22 +40,16 @@ namespace CG_Final
             get { return _p; }
             set
             {
-                if (_p.Equals(value))
-                    return;
-                _p = value;
-                UpdateCameraParameters();
+                SetProperty(ref _p, value);
             }
         }
 
-        public Point VRP
+        public Point Vrp
         {
             get { return _vrp; }
             set
             {
-                if (_vrp.Equals(value))
-                    return;
-                _vrp = value;
-                UpdateCameraParameters();
+                SetProperty(ref _vrp, value);
             }
         }
 
@@ -67,10 +59,7 @@ namespace CG_Final
             get { return _worldMaxWidth; }
             set
             {
-                if (Math.Abs(value - _worldMaxWidth) < 1)
-                    return;
-                _worldMaxWidth = value;
-                UpdateCameraParameters();
+                SetProperty(ref _worldMaxWidth, value);
             }
         }
 
@@ -80,10 +69,7 @@ namespace CG_Final
             get { return _worldMaxHeight; }
             set
             {
-                if (Math.Abs(value - _worldMaxHeight) < 1)
-                    return;
-                _worldMaxHeight = value;
-                UpdateCameraParameters();
+                SetProperty(ref _worldMaxHeight, value);
             }
         }
 
@@ -93,10 +79,7 @@ namespace CG_Final
             get { return _worldMinWidth; }
             set
             {
-                if (Math.Abs(value - _worldMinWidth) < 1)
-                    return;
-                _worldMinWidth = value;
-                UpdateCameraParameters();
+                SetProperty(ref _worldMinWidth, value);
             }
         }
 
@@ -106,12 +89,18 @@ namespace CG_Final
             get { return _worldMinHeight; }
             set
             {
-                if (Math.Abs(value - _worldMinHeight) < 1)
-                    return;
-                _worldMinHeight = value;
-                UpdateCameraParameters();
+                SetProperty(ref _worldMinHeight, value);
             }
         }
+
+        [XmlIgnore]
+        public Matrix SruSrc => _sru_src;
+
+        [XmlIgnore]
+        public Matrix SrcSrt => _src_srt;
+
+        [XmlIgnore]
+        public Matrix TransformationMatrix => _transformationMatrix;
 
         [XmlIgnore]
         public ZBuffer ZBuffer => _canvas;
@@ -172,7 +161,7 @@ namespace CG_Final
             _worldMinWidth = -_worldMaxWidth;
             _worldMinHeight = -_worldMaxHeight;
             _viewUp = viewUp;
-            _drawAction = new Wireframe(this);
+            _drawAction = new OccultWire(this);
         }
 
         protected virtual void UpdateCameraParameters()
@@ -199,14 +188,16 @@ namespace CG_Final
 
             _src_srt = new Matrix
             {
-                [0, 0] = (ZBuffer.WindowMaxWidth - ZBuffer.WindowMinWidth) / (WorldMaxWidth - WorldMinWidth),
-                [1, 1] = (ZBuffer.WindowMinHeight - ZBuffer.WindowMaxHeight) / (WorldMaxHeight - WorldMinHeight),
+                [0, 0] = (ZBuffer.WindowMaxWidth - ZBuffer.WindowMinWidth) / (double)(WorldMaxWidth - WorldMinWidth),
+                [1, 1] = (ZBuffer.WindowMinHeight - ZBuffer.WindowMaxHeight) / (double)(WorldMaxHeight - WorldMinHeight),
                 [3, 0] = -WorldMinWidth * ((ZBuffer.WindowMaxWidth - ZBuffer.WindowMinWidth) / (WorldMaxWidth - WorldMinWidth)) + ZBuffer.WindowMinWidth,
                 [3, 1] = WorldMinHeight * ((ZBuffer.WindowMaxHeight - ZBuffer.WindowMinHeight) / (WorldMaxHeight - WorldMinHeight)) + ZBuffer.WindowMaxHeight
             };
+
+            ApplyTransformation();
         }
 
-        protected virtual void ApplyMatrices()
+        protected virtual void ApplyTransformation()
         {
             _transformationMatrix = new Matrix();
 
@@ -217,18 +208,10 @@ namespace CG_Final
         public virtual void DrawScene()
         {
             UpdateCameraParameters();
-            ApplyMatrices();
 
             _drawAction.Draw();
 
             OnPropertyChanged(nameof(ZBuffer));
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public virtual Point TransformPoint(Point p)
@@ -253,10 +236,7 @@ namespace CG_Final
             get { return _dp; }
             set
             {
-                if (Math.Abs(value - _dp) < 0.075)
-                    return;
-                _dp = value;
-                UpdateCameraParameters();
+                SetProperty(ref _dp, value);
             }
         }
 
@@ -266,26 +246,27 @@ namespace CG_Final
 
         public PerspectiveCamera(Point p, Point vrp, Vector viewUp) : base(p, vrp, viewUp)
         {
-            _dp = 90;
+            _dp = 150;
         }
 
         protected override void UpdateCameraParameters()
         {
-            base.UpdateCameraParameters();
-
             _pers = new Matrix
             {
                 [2, 3] = -1 / Dp,
                 [3, 3] = 0
             };
+
+            base.UpdateCameraParameters();
         }
 
-        protected override void ApplyMatrices()
+        protected override void ApplyTransformation()
         {
             _transformationMatrix = new Matrix();
 
             _transformationMatrix.Concatenate(_src_srt);
             _transformationMatrix.Concatenate(_pers);
+            _transformationMatrix.Concatenate(_sru_src);
         }
 
         public override Point TransformPoint(Point p)
@@ -297,6 +278,8 @@ namespace CG_Final
             point.Z = z;
 
             return point;
+
+            //return _transformationMatrix * p;
         }
     }
 
@@ -333,7 +316,7 @@ namespace CG_Final
         }
     }
 
-    public class OccultWire
+    public class OccultWire : IDrawer
     {
         private readonly Camera _owner;
         private readonly Dictionary<Vertex, Point> _points;
@@ -351,14 +334,9 @@ namespace CG_Final
 
             foreach (var objectBase in currs.Objects)
             {
-                foreach (var edge in objectBase.Edges)
+                foreach (var face in objectBase.Faces/*.Where(f => f.NormalVector().DotProduct(_owner.N) > 0)*/)
                 {
-                    if (!_points.ContainsKey(edge.Init))
-                        _points.Add(edge.Init, _owner.TransformPoint(objectBase.TransformVertex(edge.Init)));
-                    if (!_points.ContainsKey(edge.End))
-                        _points.Add(edge.End, _owner.TransformPoint(objectBase.TransformVertex(edge.End)));
-
-                    _owner.ZBuffer.DrawLine(_points[edge.Init], _points[edge.End], color);
+                    _owner.ZBuffer.DrawWiredPolygon(color, face.GetVerticesClockWise().Select(objectBase.TransformVertex).Select(_owner.TransformPoint).ToList());
                 }
             }
 
