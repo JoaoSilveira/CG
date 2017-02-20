@@ -11,10 +11,10 @@ namespace CG_Final.Util
         public event PropertyChangingEventHandler PropertyChanging;
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void SetProperty<T>(ref T oldValue, T newValue, EventHandler<ValueChangedEventArgs<T>> changedHandler = null,
+        protected virtual bool SetProperty<T>(ref T oldValue, T newValue, EventHandler<ValueChangedEventArgs<T>> changedHandler = null,
             EventHandler<ValueChangedEventArgs<T>> changingHandler = null, [CallerMemberName] string propertyName = "")
         {
-            if (oldValue != null && oldValue.Equals(newValue)) return;
+            if (oldValue != null && oldValue.Equals(newValue)) return false;
 
             changingHandler?.Invoke(this, new ValueChangedEventArgs<T>(oldValue, newValue));
             PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
@@ -24,6 +24,7 @@ namespace CG_Final.Util
 
             changedHandler?.Invoke(this, new ValueChangedEventArgs<T>(old, newValue));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            return true;
         }
 
         [NotifyPropertyChangedInvocator]

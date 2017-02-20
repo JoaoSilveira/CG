@@ -108,39 +108,51 @@ namespace CG_Final
 
         #region Fields
         [NonSerialized]
+        [XmlIgnore]
         private readonly ZBuffer _canvas;
 
         [NonSerialized]
+        [XmlIgnore]
         private Point _p;
 
         [NonSerialized]
+        [XmlIgnore]
         private Point _vrp;
 
         [NonSerialized]
+        [XmlIgnore]
         protected Matrix _sru_src;
 
         [NonSerialized]
+        [XmlIgnore]
         protected Matrix _src_srt;
 
         [NonSerialized]
+        [XmlIgnore]
         private double _worldMaxWidth;
 
         [NonSerialized]
+        [XmlIgnore]
         private double _worldMaxHeight;
 
         [NonSerialized]
+        [XmlIgnore]
         private double _worldMinWidth;
 
         [NonSerialized]
+        [XmlIgnore]
         private double _worldMinHeight;
 
         [NonSerialized]
+        [XmlIgnore]
         private Vector _viewUp;
 
         [NonSerialized]
+        [XmlIgnore]
         protected Matrix _transformationMatrix;
 
         [NonSerialized]
+        [XmlIgnore]
         protected IDrawer _drawAction;
         #endregion
 
@@ -219,6 +231,15 @@ namespace CG_Final
             return _transformationMatrix * p;
         }
 
+        public void ToOccultWireframe()
+        {
+            _drawAction = new OccultWire(this);
+        }
+
+        public void ToWireframe()
+        {
+            _drawAction = new Wireframe(this);
+        }
     }
 
     [Serializable]
@@ -334,7 +355,7 @@ namespace CG_Final
 
             foreach (var objectBase in currs.Objects)
             {
-                foreach (var face in objectBase.Faces.Where(f => f.NormalVector().DotProduct(_owner.N) > 0))
+                foreach (var face in objectBase.Faces.Where(f => f.NormalVector(objectBase).DotProduct(_owner.N) > 0))
                 {
                     _owner.ZBuffer.DrawWiredPolygon(color, face.GetVerticesClockWise().Select(objectBase.TransformVertex).Select(_owner.TransformPoint).ToList());
                 }
@@ -360,9 +381,9 @@ namespace CG_Final
 
             foreach (var objectBase in curs.Objects)
             {
-                foreach (var face in objectBase.Faces.Where(f => f.NormalVector().DotProduct(_owner.N) > 0))
+                //foreach (var face in objectBase.Faces.Where(f => f.NormalVector().DotProduct(_owner.N) > 0))
                 {
-                    _owner.ZBuffer.DrawPolygon(color, face.GetVerticesClockWise().Select(objectBase.TransformVertex).Select(_owner.TransformPoint).ToArray());
+                    //_owner.ZBuffer.DrawPolygon(color, face.GetVerticesClockWise().Select(objectBase.TransformVertex).Select(_owner.TransformPoint).ToArray());
                 }
             }
         }

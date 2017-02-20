@@ -32,3 +32,7 @@ C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\D
 C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\App.baml
 C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\View\SceneControl.g.cs
 C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\View\SceneControl.baml
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\View\XyzView.g.cs
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\View\XyzView.baml
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\View\ObjectControl.g.cs
+C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\obj\Debug\View\ObjectControl.baml

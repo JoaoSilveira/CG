@@ -8,19 +8,20 @@ using System.Windows.Data;
 
 namespace CG_Final.Util
 {
-    class DecimalConverter : IValueConverter
+    class PerspectiveToBoolConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            double val;
-            return double.TryParse(value.ToString(), out val) ? $"{val:0.0##}" : null;
+            if (value is PerspectiveCamera)
+                return "Orthogonal";
+            if (value is Camera)
+                return "Perspective";
+
+            return "Error";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            double val;
-            if (double.TryParse(value.ToString(), out val))
-                return val;
             return null;
         }
     }

@@ -15,9 +15,40 @@ namespace CG_Final
     [Serializable]
     public class Vector
     {
-        public double X;
-        public double Y;
-        public double Z;
+        [NonSerialized]
+        [XmlIgnore]
+        public double _x;
+
+        [NonSerialized]
+        [XmlIgnore]
+        public double _y;
+
+        [NonSerialized]
+        [XmlIgnore]
+        public double _z;
+
+        public double X
+        {
+            get { return _x; }
+            set { _x = value; }
+        }
+
+        public double Y
+        {
+            get { return _y; }
+            set { _y = value; }
+        }
+
+        public double Z
+        {
+            get { return _z; }
+            set { _z = value; }
+        }
+
+        public Vector() : this(0, 0, 0)
+        {
+
+        }
 
         public Vector(double x = 0, double y = 0, double z = 0)
         {
@@ -112,9 +143,40 @@ namespace CG_Final
     public class Point
     {
         private const double e = .00001;
-        public double X;
-        public double Y;
-        public double Z;
+        [NonSerialized]
+        [XmlIgnore]
+        public double _x;
+
+        [NonSerialized]
+        [XmlIgnore]
+        public double _y;
+
+        [NonSerialized]
+        [XmlIgnore]
+        public double _z;
+
+        public double X
+        {
+            get { return _x; }
+            set { _x = value; }
+        }
+
+        public double Y
+        {
+            get { return _y; }
+            set { _y = value; }
+        }
+
+        public double Z
+        {
+            get { return _z; }
+            set { _z = value; }
+        }
+
+        public Point() : this(0, 0, 0)
+        {
+
+        }
 
         public Point(Vector v) : this(v.X, v.Y, v.Z)
         {
@@ -219,10 +281,10 @@ namespace CG_Final
             var list = GetSharedFaces();
             var n = list.Count;
 
-            foreach (var sharedFace in list)
-            {
-                v += sharedFace.NormalVector();
-            }
+            //foreach (var sharedFace in list)
+            //{
+            //    v += sharedFace.NormalVector();
+            //}
 
             return Vector.Normalize(v / n);
         }
@@ -509,27 +571,18 @@ namespace CG_Final
             return list;
         }
 
-        public Vector NormalVector()
+        public Vector NormalVector(ObjectBase obj)
         {
-            var p3 = (Point)(Edge.Left == this ? Edge.End : Edge.Init);
-            var p2 = Edge.Left == this ? Edge.Init : Edge.End;
+            var v3 = Edge.Left == this ? Edge.End : Edge.Init;
+            var v2 = Edge.Left == this ? Edge.Init : Edge.End;
             var e = Edge.Left == this ? Edge.LowerLeft : Edge.UpperRight;
-            var p1 = (Point)(e.Init == p2 ? e.End : e.Init);
+            var v1 = e.Init == v2 ? e.End : e.Init;
+            var p1 = obj.TransformVertex(v1);
+            var p2 = obj.TransformVertex(v2);
+            var p3 = obj.TransformVertex(v3);
             return
                 Vector.Normalize(
-                    (p3 - (Point)p2).VectorialProduct(p1 - (Point)p2));
-            //var b = GetEdgeVector(Edge);
-            //return
-            //    Vector.Normalize(
-            //        b.VectorialProduct(GetEdgeVector(Edge.Left == this ? Edge.LowerLeft : Edge.UpperRight)));
+                    (p3 - p2).VectorialProduct(p1 - p2));
         }
-
-        //public Vector GetEdgeVector(Edge e)
-        //{
-        //    if (this == e.Left)
-        //        return (Point)(e.End) - (Point)(e.Init);
-
-        //    return (Point)(e.Init) - (Point)(e.End);
-        //}
     }
 }

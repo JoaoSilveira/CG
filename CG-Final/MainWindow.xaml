@@ -12,13 +12,27 @@
         <DataTemplate DataType="{x:Type cmd:CreateNewObject}">
             <vie:NewObject DataContext="{Binding Content, ElementName=CommandContent}"/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type cmd:TranslateCommand}">
+            <vie:XyzView DataContext="{Binding Content, ElementName=CommandContent}"/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type cmd:ScaleCommand}">
+            <vie:XyzView DataContext="{Binding Content, ElementName=CommandContent}"/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type cmd:RotationCommand}">
+            <vie:XyzView DataContext="{Binding Content, ElementName=CommandContent}"/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type local:Scene}">
             <vie:SceneControl/>
         </DataTemplate>
     </Window.Resources>
     <Window.InputBindings>
         <KeyBinding Key="N" Command="{Binding NewObjectCommand}"/>
+        <KeyBinding Key="T" Command="{Binding TranslateObjectCommand}"/>
+        <KeyBinding Key="S" Command="{Binding ScaleObjectCommand}"/>
+        <KeyBinding Key="R" Command="{Binding RotateObjectCommand}"/>
         <KeyBinding Key="X" Command="{Binding DeleteObjectCommand}"/>
+        <KeyBinding Modifiers="Control" Key="O" Command="{Binding LoadSceneCommand}"/>
+        <KeyBinding Modifiers="Control" Key="S" Command="{Binding SaveSceneCommand}"/>
     </Window.InputBindings>
     <Window.DataContext>
         <local:WindowVM x:Name="WindowDataContext"/>
@@ -88,9 +102,9 @@
                                 </Grid.Resources>
                                 <Button x:Name="button" Content="New" Command="{Binding NewObjectCommand}"/>
                                 <Button x:Name="button1" Content="Delete" Grid.Column="1" Command="{Binding DeleteObjectCommand}"/>
-                                <Button x:Name="button2" Content="Translate" Grid.Row="1"/>
-                                <Button x:Name="button3" Content="Scale" Grid.Column="1" Grid.Row="1"/>
-                                <Button x:Name="button4" Content="Rotate" Grid.Row="2" />
+                                <Button x:Name="button2" Content="Translate" Grid.Row="1" Command="{Binding TranslateObjectCommand}"/>
+                                <Button x:Name="button3" Content="Scale" Grid.Column="1" Grid.Row="1" Command="{Binding ScaleObjectCommand}"/>
+                                <Button x:Name="button4" Content="Rotate" Grid.Row="2" Command="{Binding RotateObjectCommand}" />
                                 <Button x:Name="button5" Content="Twist" Grid.Column="1" Grid.Row="2"/>
                                 <Button x:Name="button6" Content="Bend" Grid.Row="3"/>
                                 <Button x:Name="button7" Content="Bevel" Grid.Column="1" Grid.Row="3"/>
@@ -105,7 +119,13 @@
                     <TabItem Header="Object">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                             <Grid Background="#FFE5E5E5">
-                                <ContentControl Content="{Binding SelectedObject}"/>
+                                <ContentControl x:Name="MinhocaUhaha" Content="{Binding SelectedObject}">
+                                    <ContentControl.ContentTemplate>
+                                        <DataTemplate>
+                                            <vie:ObjectControl DataContext="{Binding Content, ElementName=MinhocaUhaha}"/>
+                                        </DataTemplate>
+                                    </ContentControl.ContentTemplate>
+                                </ContentControl>
                             </Grid>
                         </ScrollViewer>
                     </TabItem>
@@ -116,7 +136,7 @@
                     </TabItem>
                     <TabItem Header="Scene">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                            <ContentControl Content="{Binding CurrentScene}"/>
+                            <ContentControl Content="{Binding CurrentScene, Mode=TwoWay}"/>
                         </ScrollViewer>
                     </TabItem>
                 </TabControl>

@@ -9,6 +9,8 @@ namespace CG_Final.Commands
 
         void Apply();
 
+        Matrix Transformation { get; }
+
         event Action OnApply;
     }
 }

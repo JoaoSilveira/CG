@@ -80,6 +80,8 @@ namespace CG_Final.Commands
             OnApply?.Invoke();
         }
 
+        public Matrix Transformation => null;
+
         public event Action OnApply;
     }
 }

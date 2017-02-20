@@ -8,5 +8,7 @@
          <conv:TitleConverter x:Key="TitleConverter"/>
          <conv:VerticesConverter x:Key="VerticesConverter"/>
         <conv:DecimalConverter x:Key="DecimalConverter"/>
+        <conv:PerspectiveToBoolConverter x:Key="PerspectiveToBoolConverter"/>
+        <conv:SelectedCameraConverter x:Key="SelectedCameraConverter"/>
     </Application.Resources>
 </Application>

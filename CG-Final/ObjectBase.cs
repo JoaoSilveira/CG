@@ -1,35 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Configuration;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
+using CG_Final.Commands;
 
 namespace CG_Final
 {
-    public class ObjectBase
+    [Serializable]
+    public class ObjectBase : IXmlSerializable
     {
         public const int InitialVertices = 3;
 
         public static int count = 0;
 
         #region Fields
-        private readonly Matrix _transformation;
+        [NonSerialized]
+        private Matrix _transformation;
+        [NonSerialized]
         private readonly List<Vertex> _vertices;
+        [NonSerialized]
         private readonly List<Edge> _edges;
+        [NonSerialized]
         private Face _top;
+        [NonSerialized]
         private Face _down;
+        private int slices;
+        private int baseVertices;
+        [NonSerialized]
+        [XmlIgnore]
+        private IObjectCommand _attachedCommand;
         #endregion
 
         #region Properties
-        public int Id { get; }
+        public int Id { get; private set; }
+
+        [XmlIgnore]
         public List<Face> Faces { get; }
+
+        [XmlIgnore]
         public List<Edge> Edges => _edges;
+
+        [XmlIgnore]
         public List<Vertex> Vertices => _vertices;
+
+        public Point Ka { get; set; }
+
+        public Point Kd { get; set; }
+
+        public Point Ks { get; set; }
+
+        public int N { get; set; }
         #endregion
 
         public ObjectBase()
         {
+            slices = 0;
+            baseVertices = 0;
             Id = count++;
             _transformation = new Matrix();
 
@@ -47,6 +79,11 @@ namespace CG_Final
                 _vertices.Add(new Vertex());
 
             InitializeBasicObject();
+
+            Ka = new Point(1, 1, 1);
+            Kd = new Point(.8, .8, .8);
+            Ks = new Point(.5, .5, .5);
+            N = 2;
         }
 
         private void InitializeBasicObject()
@@ -116,6 +153,8 @@ namespace CG_Final
 
         public void ChangeVertices(int n)
         {
+            baseVertices = n;
+
             if (_vertices.Count > 6)
                 _vertices.RemoveRange(6, _vertices.Count - 6);
 
@@ -278,12 +317,70 @@ namespace CG_Final
 
         public Point TransformVertex(Vertex v)
         {
+            if (_attachedCommand != null)
+            {
+                var p = _transformation*(Point) v;
+                return _attachedCommand.Transformation * p;
+            }
+
             return _transformation * (Point)v;
         }
 
         public override string ToString()
         {
             return $"Object - {Id}";
+        }
+
+        public void ApplyTransformation(Matrix m)
+        {
+            m.Concatenate(_transformation);
+            _transformation = m;
+        }
+
+        public void AttachCommand(IObjectCommand cmd)
+        {
+            _attachedCommand = cmd;
+        }
+
+        public void DeattachCommand()
+        {
+            _attachedCommand = null;
+        }
+
+        public XmlSchema GetSchema()
+        {
+            return null;
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+            for (var i = 0; i < reader.AttributeCount; i++)
+            {
+                reader.MoveToAttribute(i);
+
+                if (reader.Name.Equals("id"))
+                    Id = int.Parse(reader.Value);
+
+                if (reader.Name.Equals("slices"))
+                    slices = int.Parse(reader.Value);
+
+                if (reader.Name.Equals("baseVertices"))
+                    baseVertices = int.Parse(reader.Value);
+            }
+            reader.Read();
+            _transformation.ReadXml(reader);
+
+            ChangeVertices(baseVertices);
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            writer.WriteAttributeString("id", Id.ToString());
+            writer.WriteAttributeString("slices", slices.ToString());
+            writer.WriteAttributeString("baseVertices", baseVertices.ToString());
+            writer.WriteStartElement("transform");
+            _transformation.WriteXml(writer);
+            writer.WriteEndElement();
         }
     }
 }

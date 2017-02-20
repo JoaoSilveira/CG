@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\Users\Malaquias\Documents\Visual Studio 2015\Projects\CG-Final\CG-Final\App.xaml
-3-577131749
+5-2053841455
 
-291064830806
+36111989944
 151984215308
-MainWindow.xaml;View\NewObject.xaml;View\SceneControl.xaml;
+MainWindow.xaml;View\NewObject.xaml;View\ObjectControl.xaml;View\SceneControl.xaml;View\XyzView.xaml;
 
 True
 

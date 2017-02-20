@@ -31,8 +31,7 @@ namespace CG_Final.View
             get { return _selectedCamera; }
             set
             {
-                if (!ReferenceEquals(value, _selectedCamera))
-                    _selectedCamera = value;
+                _selectedCamera = value;
                 OnPropertyChanged();
             }
         }
@@ -40,6 +39,7 @@ namespace CG_Final.View
         public SceneControl()
         {
             InitializeComponent();
+            SelectedCamera = Scene.CurrentScene.Camera1;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -50,20 +50,72 @@ namespace CG_Final.View
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void radioButton_Checked(object sender, RoutedEventArgs e)
-        {
-            if (ReferenceEquals(cm1, sender))
-                SelectedCamera = Scene.CurrentScene.Camera1;
-            else if (ReferenceEquals(cm2, sender))
-                SelectedCamera = Scene.CurrentScene.Camera2;
-            else if (ReferenceEquals(cm3, sender))
-                SelectedCamera = Scene.CurrentScene.Camera3;
-            else if (ReferenceEquals(cm4, sender))
-                SelectedCamera = Scene.CurrentScene.Camera4;
-        }
-
         private void button_Click(object sender, RoutedEventArgs e)
         {
+            Scene.CurrentScene.Redraw();
+        }
+
+        private void camera_Click(object sender, RoutedEventArgs e)
+        {
+            Camera newCamera;
+            if (SelectedCamera is PerspectiveCamera)
+            {
+                newCamera = new Camera(SelectedCamera.P, SelectedCamera.Vrp, SelectedCamera.ViewUp)
+                {
+                    WorldMinWidth = SelectedCamera.WorldMinWidth,
+                    WorldMaxWidth = SelectedCamera.WorldMaxWidth,
+                    WorldMinHeight = SelectedCamera.WorldMinHeight,
+                    WorldMaxHeight = SelectedCamera.WorldMaxHeight
+                };
+            }
+            else
+            {
+                newCamera = new PerspectiveCamera(SelectedCamera.P, SelectedCamera.Vrp, SelectedCamera.ViewUp)
+                {
+                    WorldMinWidth = SelectedCamera.WorldMinWidth,
+                    WorldMaxWidth = SelectedCamera.WorldMaxWidth,
+                    WorldMinHeight = SelectedCamera.WorldMinHeight,
+                    WorldMaxHeight = SelectedCamera.WorldMaxHeight
+                };
+            }
+
+            ChangeCamera(newCamera);
+        }
+
+        private void ChangeCamera(Camera newCamera)
+        {
+            newCamera.DrawScene();
+            if (ReferenceEquals(SelectedCamera, Scene.CurrentScene.Camera1))
+            {
+                Scene.CurrentScene.Camera1 = newCamera;
+                SelectedCamera = Scene.CurrentScene.Camera1;
+            }
+            else if (ReferenceEquals(SelectedCamera, Scene.CurrentScene.Camera2))
+            {
+                Scene.CurrentScene.Camera2 = newCamera;
+                SelectedCamera = Scene.CurrentScene.Camera2;
+            }
+            else if (ReferenceEquals(SelectedCamera, Scene.CurrentScene.Camera3))
+            {
+                Scene.CurrentScene.Camera3 = newCamera;
+                SelectedCamera = Scene.CurrentScene.Camera3;
+            }
+            else if (ReferenceEquals(SelectedCamera, Scene.CurrentScene.Camera4))
+            {
+                Scene.CurrentScene.Camera4 = newCamera;
+                SelectedCamera = Scene.CurrentScene.Camera4;
+            }
+        }
+
+        private void OccultWireClick(object sender, RoutedEventArgs e)
+        {
+            SelectedCamera.ToOccultWireframe();
+            Scene.CurrentScene.Redraw();
+        }
+
+        private void WireframeClick(object sender, RoutedEventArgs e)
+        {
+            SelectedCamera.ToWireframe();
             Scene.CurrentScene.Redraw();
         }
     }

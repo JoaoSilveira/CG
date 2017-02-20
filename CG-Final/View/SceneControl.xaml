@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:CG_Final.View"
              xmlns:base="clr-namespace:CG_Final"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="400">
+             d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="Margin" Value="5"/>
@@ -22,7 +22,11 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0" Grid.Column="0" Content="World minimum width:"/>
                 <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding WorldMinWidth, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
@@ -32,6 +36,62 @@
                 <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding WorldMaxWidth, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
                 <Label Grid.Row="3" Grid.Column="0" Content="World maximum height:"/>
                 <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding WorldMaxHeight, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                <GroupBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Header="Vrp">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="X" Margin="5"/>
+                        <TextBox Grid.Column="1" Text="{Binding Path=Vrp.X, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Label Grid.Column="2"  Content="Y" Margin="5"/>
+                        <TextBox Grid.Column="3" Text="{Binding Path=Vrp.Y, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Label Grid.Column="4"  Content="Z" Margin="5"/>
+                        <TextBox Grid.Column="5" Text="{Binding Path=Vrp.Z, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Header="P">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="X" Margin="5"/>
+                        <TextBox Grid.Column="1" Text="{Binding Path=P.X, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Label Grid.Column="2"  Content="Y" Margin="5"/>
+                        <TextBox Grid.Column="3" Text="{Binding Path=P.Y, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Label Grid.Column="4"  Content="Z" Margin="5"/>
+                        <TextBox Grid.Column="5" Text="{Binding Path=P.Z, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Header="View Up">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="X" Margin="5"/>
+                        <TextBox Grid.Column="1" Text="{Binding Path=ViewUp.X, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Label Grid.Column="2"  Content="Y" Margin="5"/>
+                        <TextBox Grid.Column="3" Text="{Binding Path=ViewUp.Y, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Label Grid.Column="4"  Content="Z" Margin="5"/>
+                        <TextBox Grid.Column="5" Text="{Binding Path=ViewUp.Z, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
+                </GroupBox>
+                <Button Grid.Row="7" Grid.Column="0" Content="Occult Wireframe" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Top" Click="OccultWireClick"/>
+                <Button Grid.Row="7" Grid.Column="1" Content="Wireframe" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Top" Click="WireframeClick"/>
             </Grid>
         </DataTemplate>
         <DataTemplate DataType="{x:Type base:PerspectiveCamera}">
@@ -45,43 +105,100 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Content="World minimum width:"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding WorldMinWidth, Converter={StaticResource DecimalConverter}}"/>
-                <Label Grid.Row="1" Grid.Column="0" Content="World minimum height:"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding WorldMinHeight, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
-                <Label Grid.Row="2" Grid.Column="0" Content="World maximum width:"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding WorldMaxWidth, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
-                <Label Grid.Row="3" Grid.Column="0" Content="World maximum height:"/>
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding WorldMaxHeight, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
-                <Label Grid.Row="4" Grid.Column="0" Content="Plane's distance:"/>
-                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Dp, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
-            </Grid>
+                <Label Grid.Row="0" Grid.Column="0" Content="Plane's distance:"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Dp, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Grid.Row="1" Grid.Column="0" Content="World minimum width:"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding WorldMinWidth, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Grid.Row="2" Grid.Column="0" Content="World minimum height:"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding WorldMinHeight, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Grid.Row="3" Grid.Column="0" Content="World maximum width:"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding WorldMaxWidth, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Grid.Row="4" Grid.Column="0" Content="World maximum height:"/>
+                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding WorldMaxHeight, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                <GroupBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Header="Vrp">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="X" Margin="5"/>
+                        <TextBox Grid.Column="1" Text="{Binding Path=Vrp.X, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Label Grid.Column="2"  Content="Y" Margin="5"/>
+                        <TextBox Grid.Column="3" Text="{Binding Path=Vrp.Y, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Label Grid.Column="4"  Content="Z" Margin="5"/>
+                        <TextBox Grid.Column="5" Text="{Binding Path=Vrp.Z, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Header="P">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="X" Margin="5"/>
+                        <TextBox Grid.Column="1" Text="{Binding Path=P.X, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Label Grid.Column="2"  Content="Y" Margin="5"/>
+                        <TextBox Grid.Column="3" Text="{Binding Path=P.Y, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Label Grid.Column="4"  Content="Z" Margin="5"/>
+                        <TextBox Grid.Column="5" Text="{Binding Path=P.Z, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Header="View Up">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="X" Margin="5"/>
+                        <TextBox Grid.Column="1" Text="{Binding Path=ViewUp.X, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Label Grid.Column="2"  Content="Y" Margin="5"/>
+                        <TextBox Grid.Column="3" Text="{Binding Path=ViewUp.Y, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Label Grid.Column="4"  Content="Z" Margin="5"/>
+                        <TextBox Grid.Column="5" Text="{Binding Path=ViewUp.Z, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
+                </GroupBox>
+             </Grid>
         </DataTemplate>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <RadioButton x:Name="cm1" Content="Camera 1" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" GroupName="Camera" IsChecked="True" Checked="radioButton_Checked"/>
-        <RadioButton x:Name="cm2" Content="Camera 2" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" Checked="radioButton_Checked"
+        <RadioButton x:Name="cm1" Content="Camera 1" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" GroupName="Camera" IsChecked="{Binding SelectedCamera, RelativeSource={RelativeSource AncestorType={x:Type local:SceneControl}, Mode=FindAncestor}, Converter={StaticResource SelectedCameraConverter}, ConverterParameter=1, Mode=TwoWay}"/>
+        <RadioButton x:Name="cm2" Content="Camera 2" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" IsChecked="{Binding SelectedCamera, RelativeSource={RelativeSource AncestorType={x:Type local:SceneControl}, Mode=FindAncestor}, Converter={StaticResource SelectedCameraConverter}, ConverterParameter=2, Mode=TwoWay}"
                      Grid.Row="0" Grid.Column="1" GroupName="Camera"/>
-        <RadioButton x:Name="cm3" Content="Camera 3" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" Checked="radioButton_Checked"
-                     Grid.Row="0" Grid.Column="2" GroupName="Camera"/>
-        <RadioButton x:Name="cm4" Content="Camera 4" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" Checked="radioButton_Checked"
-                     Grid.Row="0" Grid.Column="4" GroupName="Camera"/>
-        <ContentControl Content="{Binding SelectedCamera, RelativeSource={RelativeSource AncestorType={x:Type local:SceneControl}, Mode=FindAncestor}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Grid.ColumnSpan="4"
+        <RadioButton x:Name="cm3" Content="Camera 3" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" IsChecked="{Binding SelectedCamera, RelativeSource={RelativeSource AncestorType={x:Type local:SceneControl}, Mode=FindAncestor}, Converter={StaticResource SelectedCameraConverter}, ConverterParameter=3, Mode=TwoWay}"
+                     Grid.Row="1" Grid.Column="0" GroupName="Camera"/>
+        <RadioButton x:Name="cm4" Content="Camera 4" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" IsChecked="{Binding SelectedCamera, RelativeSource={RelativeSource AncestorType={x:Type local:SceneControl}, Mode=FindAncestor}, Converter={StaticResource SelectedCameraConverter}, ConverterParameter=4, Mode=TwoWay}"
+                     Grid.Row="1" Grid.Column="1" GroupName="Camera"/>
+        <ContentControl Content="{Binding SelectedCamera, RelativeSource={RelativeSource AncestorType={x:Type local:SceneControl}, Mode=FindAncestor}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" Grid.ColumnSpan="2"
                         Grid.Column="0"/>
-        <Button x:Name="button" Content="Apply" Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Center" Margin="5" Grid.Row="2" VerticalAlignment="Bottom" Width="75" Click="button_Click"/>
-
+        <Button Content="{Binding SelectedCamera, RelativeSource={RelativeSource AncestorType={x:Type local:SceneControl}, Mode=FindAncestor}, Converter={StaticResource PerspectiveToBoolConverter}}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Click="camera_Click"/>
+        <Button x:Name="button" Content="Apply" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="5" Grid.Row="4" VerticalAlignment="Bottom" Width="75" Click="button_Click"/>
     </Grid>
 </UserControl>

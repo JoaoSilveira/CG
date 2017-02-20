@@ -14,13 +14,13 @@ namespace CG_Final
     {
         public void DrawObject(Camera camera, ObjectBase obj)
         {
-            foreach (var face in obj.Faces)
-            {
-                if (camera.N.DotProduct(face.NormalVector()) <= 0)
-                    continue;
+            //foreach (var face in obj.Faces)
+            //{
+            //    if (camera.N.DotProduct(face.NormalVector()) <= 0)
+            //        continue;
 
 
-            }
+            //}
         }
     }
 

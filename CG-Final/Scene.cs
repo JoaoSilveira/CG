@@ -19,9 +19,10 @@ namespace CG_Final
     {
         public static Scene CurrentScene { get; set; }
 
-        [XmlArray]
-        private Camera[] _cameras;
+        [NonSerialized]
+        private readonly Camera[] _cameras;
 
+        [NonSerialized]
         private string _title;
 
         public string Title
@@ -45,29 +46,52 @@ namespace CG_Final
 
         [XmlIgnore]
         public ImageSource Cam4Source => Convert(Camera4.ZBuffer.Bitmap);
-
+        
         public Camera Camera1
         {
             get { return _cameras[0]; }
-            set { SetProperty(ref _cameras[0], value); }
-        }
+            set
+            {
+                if (!SetProperty(ref _cameras[0], value)) return;
 
+                OnPropertyChanged(nameof(Cam1Source));
+                Camera1.PropertyChanged += (sender, args) => OnPropertyChanged(nameof(Cam1Source));
+            }
+        }
+        
         public Camera Camera2
         {
             get { return _cameras[1]; }
-            set { SetProperty(ref _cameras[1], value); }
-        }
+            set
+            {
+                if (!SetProperty(ref _cameras[1], value)) return;
 
+                OnPropertyChanged(nameof(Cam2Source));
+                Camera2.PropertyChanged += (sender, args) => OnPropertyChanged(nameof(Cam2Source));
+            }
+        }
+        
         public Camera Camera3
         {
             get { return _cameras[2]; }
-            set { SetProperty(ref _cameras[2], value); }
+            set
+            {
+                if (!SetProperty(ref _cameras[2], value)) return;
+                OnPropertyChanged(nameof(Cam3Source));
+                Camera3.PropertyChanged += (sender, args) => OnPropertyChanged(nameof(Cam3Source));
+            }
         }
-
+        
         public Camera Camera4
         {
             get { return _cameras[3]; }
-            set { SetProperty(ref _cameras[3], value); }
+            set
+            {
+                if (!SetProperty(ref _cameras[3], value)) return;
+
+                OnPropertyChanged(nameof(Cam4Source));
+                Camera4.PropertyChanged += (sender, args) => OnPropertyChanged(nameof(Cam4Source));
+            }
         }
         #endregion
 
@@ -87,13 +111,8 @@ namespace CG_Final
             Camera3 = new Camera(new Point(), new Point(y: 100), new Vector(z: -1));
             Camera4 = new Camera(new Point(), new Point(100), new Vector(y: 1));
 
-            Camera1.PropertyChanged += (sender, args) => OnPropertyChanged(nameof(Cam1Source));
-            Camera2.PropertyChanged += (sender, args) => OnPropertyChanged(nameof(Cam2Source));
-            Camera3.PropertyChanged += (sender, args) => OnPropertyChanged(nameof(Cam3Source));
-            Camera4.PropertyChanged += (sender, args) => OnPropertyChanged(nameof(Cam4Source));
-
             Lamps = new List<Lamp>();
-            Objects = new ObservableCollection<ObjectBase> { new ObjectBase() };
+            Objects = new ObservableCollection<ObjectBase>();
             Title = "Untitled";
         }
 
@@ -124,13 +143,5 @@ namespace CG_Final
             Camera4.ZBuffer.Clear();
             Camera4.DrawScene();
         }
-
-        //public event PropertyChangedEventHandler PropertyChanged;
-
-        //[NotifyPropertyChangedInvocator]
-        //protected virtual void OnPropertyChanged(string propertyName)
-        //{
-        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        //}
     }
 }
