@@ -25,7 +25,7 @@ namespace CG_Final
         public int Id { get; }
         public List<Face> Faces { get; }
         public List<Edge> Edges => _edges;
-        public List<Vertex> Vertices => _vertices; 
+        public List<Vertex> Vertices => _vertices;
         #endregion
 
         public ObjectBase()
@@ -152,10 +152,11 @@ namespace CG_Final
                 switch (i % 3)
                 {
                     case 0:
-                        e.Right = Faces[0];
-                        e.Init = i == 0 ? _vertices[0] : newv[(i - 1) / 3 * 2];
-                        e.End = newv[i / 3 * 2];
-                        e.Left.Edge = e;
+                        e.Left = Faces[0];
+                        e.Init = newv[i / 3 * 2];
+                        e.End = i == 0 ? _vertices[0] : newv[(i - 1) / 3 * 2];
+                        e.Right = newf[i / 3];
+                        e.Right.Edge = e;
                         break;
                     case 1:
                         e.Right = i == n * 3 - 2 ? Faces[3] : newf[i / 3 + 1];
@@ -180,27 +181,26 @@ namespace CG_Final
                     case 0:
                         if (i == 0)
                         {
-                            newe[i].LowerLeft = _edges[3];
-                            newe[i].LowerRight = _edges[0];
+                            newe[i].UpperRight = _edges[3];
+                            newe[i].UpperLeft = _edges[0];
                             _edges[0].LowerLeft = newe[i];
                             _edges[3].LowerRight = newe[i];
                         }
                         else
                         {
-                            newe[i].LowerLeft = newe[i - 2];
-                            newe[i].LowerRight = newe[i - 3];
+                            newe[i].UpperRight = newe[i - 2];
+                            newe[i].UpperLeft = newe[i - 3];
                         }
                         if (i == (n - 1) * 3)
                         {
-                            newe[i].UpperLeft = newe[i + 1];
-                            newe[i].UpperRight = _edges[2];
+                            newe[i].LowerLeft = _edges[2];
                             _edges[2].UpperLeft = newe[i];
                         }
                         else
                         {
-                            newe[i].UpperLeft = newe[i + 1];
-                            newe[i].UpperRight = newe[i + 3];
+                            newe[i].LowerLeft = newe[i + 3];
                         }
+                        newe[i].LowerRight = newe[i + 1];
                         break;
                     case 1:
                         newe[i].UpperLeft = newe[i + 1];
@@ -246,9 +246,9 @@ namespace CG_Final
             var angle = 360.0 / (n + 3);
             var total = n * 2 - 2;
 
-            for (var i = 0; i <= total; i += 2)
+            for (var i = 0; i < newv.Count; i += 2)
             {
-                var m = Matrix.YRotationMatrix(angle * ((total - i) / 2 + 3));
+                var m = Matrix.YRotationMatrix(-angle * ((total - i) / 2 + 3));
                 var p1 = m * (Point)newv[i];
 
                 newv[i].X = p1.X;
@@ -262,7 +262,7 @@ namespace CG_Final
 
             for (var i = 1; i < 3; i++)
             {
-                var m = Matrix.YRotationMatrix(angle * i);
+                var m = Matrix.YRotationMatrix(-angle * i);
                 var p1 = m * (Point)_vertices[i];
 
                 _vertices[i].X = p1.X;

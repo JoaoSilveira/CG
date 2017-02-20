@@ -12,6 +12,9 @@
         <DataTemplate DataType="{x:Type cmd:CreateNewObject}">
             <vie:NewObject DataContext="{Binding Content, ElementName=CommandContent}"/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type local:Scene}">
+            <vie:SceneControl/>
+        </DataTemplate>
     </Window.Resources>
     <Window.InputBindings>
         <KeyBinding Key="N" Command="{Binding NewObjectCommand}"/>
@@ -42,11 +45,11 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Image Source="{Binding Path=CurrentScene.Cam1Source, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MainWindow}}" Margin="0,0,1,1" />
-            <Image Grid.Row="0" Grid.Column="1" Source="{Binding Path=CurrentScene.Cam2Source, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MainWindow}}" Margin="1,0,0,1"/>
-            <Image Source="{Binding Path=CurrentScene.Cam3Source, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MainWindow}}" Margin="0,1,1,0" Grid.Row="1"
+            <Image Source="{Binding CurrentScene.Cam1Source}" Margin="0,0,1,1" />
+            <Image Grid.Row="0" Grid.Column="1" Source="{Binding CurrentScene.Cam2Source}" Margin="1,0,0,1"/>
+            <Image Source="{Binding CurrentScene.Cam3Source}" Margin="0,1,1,0" Grid.Row="1"
                    Grid.Column="0" />
-            <Image Grid.Column="1" Source="{Binding Path=CurrentScene.Cam4Source, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MainWindow}}" Margin="1,1,0,0" Grid.Row="1"/>
+            <Image Grid.Column="1" Source="{Binding CurrentScene.Cam4Source}" Margin="1,1,0,0" Grid.Row="1"/>
         </Grid>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
@@ -109,6 +112,11 @@
                     <TabItem Header="Modifiers">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                             <Grid Background="#FFE5E5E5"/>
+                        </ScrollViewer>
+                    </TabItem>
+                    <TabItem Header="Scene">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                            <ContentControl Content="{Binding CurrentScene}"/>
                         </ScrollViewer>
                     </TabItem>
                 </TabControl>

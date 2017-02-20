@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Timers;
+using System.Windows;
 using CG_Final.Commands;
 using CG_Final.Util;
 
@@ -40,11 +41,15 @@ namespace CG_Final
 
         public WindowVM()
         {
-            CurrentScene = Scene.CurrentScene;
+            CurrentScene = new Scene();
+            Scene.CurrentScene = CurrentScene;
+
             NewObjectCommand = new Command(NewObject);
             DeleteObjectCommand = new Command(DeleteObject, () => SelectedObject != null);
 
             SelectedObject = CurrentScene.Objects[0];
+
+            CurrentScene.Redraw();
         }
 
         private void DeleteObject()

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Documents;
@@ -401,15 +403,42 @@ namespace CG_Final
 
         public void ReadXml(XmlReader reader)
         {
-            reader.MoveToContent();
-            var line1 = reader.ReadElementString("line1").Split();
-            var line2 = reader.ReadElementString("line2").Split();
-            var line3 = reader.ReadElementString("line3").Split();
-            var line4 = reader.ReadElementString("line4").Split();
+            List<string> l1 = null;
+            List<string> l2 = null;
+            List<string> l3 = null;
+            List<string> l4 = null;
+
+            while (reader.Read())
+            {
+                if (reader.NodeType != XmlNodeType.Element)
+                    continue;
+                switch (reader.Name)
+                {
+                    case "line1":
+                        reader.Read();
+                        l1 = reader.Value.Split().ToList();
+                        break;
+                    case "line2":
+                        reader.Read();
+                        l2 = reader.Value.Split().ToList();
+                        break;
+                    case "line3":
+                        reader.Read();
+                        l3 = reader.Value.Split().ToList();
+                        break;
+                    case "line4":
+                        reader.Read();
+                        l4 = reader.Value.Split().ToList();
+                        break;
+                }
+            }
 
             for (var i = 0; i < 4; i++)
             {
-
+                this[i, 0] = double.Parse(l1[i]);
+                this[i, 1] = double.Parse(l2[i]);
+                this[i, 2] = double.Parse(l3[i]);
+                this[i, 3] = double.Parse(l4[i]);
             }
         }
 
@@ -482,25 +511,25 @@ namespace CG_Final
 
         public Vector NormalVector()
         {
-            //var p3 = (Point)(Edge.Left == this ? Edge.End : Edge.Init);
-            //var p2 = Edge.Left == this ? Edge.Init : Edge.End;
-            //var e = Edge.Left == this ? Edge.LowerLeft : Edge.UpperRight;
-            //var p1 = (Point)(e.Init == p2 ? e.End : e.Init);
-            //return
-            //    Vector.Normalize(
-            //        (p3 - (Point)p2).VectorialProduct(p1 - (Point)p2));
-            var b = GetEdgeVector(Edge);
+            var p3 = (Point)(Edge.Left == this ? Edge.End : Edge.Init);
+            var p2 = Edge.Left == this ? Edge.Init : Edge.End;
+            var e = Edge.Left == this ? Edge.LowerLeft : Edge.UpperRight;
+            var p1 = (Point)(e.Init == p2 ? e.End : e.Init);
             return
                 Vector.Normalize(
-                    b.VectorialProduct(GetEdgeVector(Edge.Left == this ? Edge.LowerLeft : Edge.UpperRight)));
+                    (p3 - (Point)p2).VectorialProduct(p1 - (Point)p2));
+            //var b = GetEdgeVector(Edge);
+            //return
+            //    Vector.Normalize(
+            //        b.VectorialProduct(GetEdgeVector(Edge.Left == this ? Edge.LowerLeft : Edge.UpperRight)));
         }
 
-        public Vector GetEdgeVector(Edge e)
-        {
-            if (this == e.Left)
-                return (Point)(e.End) - (Point)(e.Init);
+        //public Vector GetEdgeVector(Edge e)
+        //{
+        //    if (this == e.Left)
+        //        return (Point)(e.End) - (Point)(e.Init);
 
-            return (Point)(e.Init) - (Point)(e.End);
-        }
+        //    return (Point)(e.Init) - (Point)(e.End);
+        //}
     }
 }

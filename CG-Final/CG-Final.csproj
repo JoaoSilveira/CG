@@ -67,6 +67,7 @@
     <Compile Include="Properties\Annotations1.cs" />
     <Compile Include="Raster.cs" />
     <Compile Include="Scene.cs" />
+    <Compile Include="Util\DecimalConverter.cs" />
     <Compile Include="Util\TitleConverter.cs" />
     <Compile Include="Util\Command.cs" />
     <Compile Include="Util\ModelBase.cs" />
@@ -74,6 +75,9 @@
     <Compile Include="Util\VerticesConverter.cs" />
     <Compile Include="View\NewObject.xaml.cs">
       <DependentUpon>NewObject.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\SceneControl.xaml.cs">
+      <DependentUpon>SceneControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="WindowVM.cs" />
     <Compile Include="ZBuffer.cs" />
@@ -90,6 +94,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="View\NewObject.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SceneControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

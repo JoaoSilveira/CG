@@ -334,7 +334,7 @@ namespace CG_Final
 
             foreach (var objectBase in currs.Objects)
             {
-                foreach (var face in objectBase.Faces/*.Where(f => f.NormalVector().DotProduct(_owner.N) > 0)*/)
+                foreach (var face in objectBase.Faces.Where(f => f.NormalVector().DotProduct(_owner.N) > 0))
                 {
                     _owner.ZBuffer.DrawWiredPolygon(color, face.GetVerticesClockWise().Select(objectBase.TransformVertex).Select(_owner.TransformPoint).ToList());
                 }
@@ -356,12 +356,13 @@ namespace CG_Final
         public void Draw()
         {
             var curs = Scene.CurrentScene;
+            var color = Settings.Default.LineDefaultColor;
 
             foreach (var objectBase in curs.Objects)
             {
-                foreach (var result in objectBase.Faces.Select(p => new Polygon(p, objectBase, _owner)))
+                foreach (var face in objectBase.Faces.Where(f => f.NormalVector().DotProduct(_owner.N) > 0))
                 {
-                    result.Draw(_owner.ZBuffer);
+                    _owner.ZBuffer.DrawPolygon(color, face.GetVerticesClockWise().Select(objectBase.TransformVertex).Select(_owner.TransformPoint).ToArray());
                 }
             }
         }

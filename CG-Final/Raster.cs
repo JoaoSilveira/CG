@@ -170,7 +170,7 @@ namespace CG_Final
             var normal = b.VectorialProduct(a);
             normal.Normalize();
 
-            if (normal.Z <= 0)
+            if (normal.Z > 0)
                 return;
 
             var p = points.Last();

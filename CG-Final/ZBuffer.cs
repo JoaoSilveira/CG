@@ -25,7 +25,6 @@ namespace CG_Final
 
         public readonly Bitmap Bitmap;
         public readonly double[,] Depth;
-        //private readonly byte[] bytes;
 
         private int _xmin;
         private int _ymin;
@@ -41,15 +40,6 @@ namespace CG_Final
             _ymin = 0;
             _xmax = Width - 1;
             _ymax = Height - 1;
-            //bytes = new byte[Width * Height*4];
-
-            //Parallel.ForEach(Enumerable.Range(0, Width * Height).Select(i => i * 4), i =>
-            //{
-            //    bytes[i] = BackGroundColor.A;
-            //    bytes[i + 2] = BackGroundColor.R;
-            //    bytes[i + 3] = BackGroundColor.G;
-            //    bytes[i + 1] = BackGroundColor.B;
-            //});
             Clear();
         }
 
@@ -57,20 +47,12 @@ namespace CG_Final
         {
             if (_xmin > _xmax || _ymin > _ymax)
                 return;
-
-            var init = DateTime.Now;
+            
             using (var g = Graphics.FromImage(Bitmap))
             {
                 g.FillRectangle(new SolidBrush(BackGroundColor), _xmin, _ymin, _xmax - _xmin + 1, _ymax - _ymin + 1);
             }
 
-            //var rectangle = new Rectangle(0, 0, Width, Height);
-            //var bitmapData = Bitmap.LockBits(rectangle, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-            //var pt = bitmapData.Scan0;
-            //Marshal.Copy(bytes, 0, pt, bytes.Length);
-            //Bitmap.UnlockBits(bitmapData);
-
-            Console.WriteLine((DateTime.Now - init).TotalMilliseconds);
             Parallel.For(_ymin, _ymax + 1, i =>
             {
                 for (var j = _xmin; j < _xmax + 1; j++)

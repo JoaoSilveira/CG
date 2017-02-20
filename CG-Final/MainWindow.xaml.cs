@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -15,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Serialization;
 using CG_Final.Annotations;
 
 namespace CG_Final
@@ -24,11 +27,8 @@ namespace CG_Final
     /// </summary>
     public partial class MainWindow
     {
-        public Scene CurrentScene => Scene.CurrentScene;
-
         public MainWindow()
         {
-            Scene.CurrentScene = new Scene();
             InitializeComponent();
         }
     }

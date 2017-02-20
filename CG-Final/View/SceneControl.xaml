@@ -1,0 +1,87 @@
+﻿<UserControl x:Class="CG_Final.View.SceneControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CG_Final.View"
+             xmlns:base="clr-namespace:CG_Final"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <DataTemplate DataType="{x:Type base:Camera}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Content="World minimum width:"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding WorldMinWidth, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Grid.Row="1" Grid.Column="0" Content="World minimum height:"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding WorldMinHeight, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Grid.Row="2" Grid.Column="0" Content="World maximum width:"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding WorldMaxWidth, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Grid.Row="3" Grid.Column="0" Content="World maximum height:"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding WorldMaxHeight, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type base:PerspectiveCamera}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Content="World minimum width:"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding WorldMinWidth, Converter={StaticResource DecimalConverter}}"/>
+                <Label Grid.Row="1" Grid.Column="0" Content="World minimum height:"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding WorldMinHeight, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Grid.Row="2" Grid.Column="0" Content="World maximum width:"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding WorldMaxWidth, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Grid.Row="3" Grid.Column="0" Content="World maximum height:"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding WorldMaxHeight, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Grid.Row="4" Grid.Column="0" Content="Plane's distance:"/>
+                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Dp, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <RadioButton x:Name="cm1" Content="Camera 1" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" GroupName="Camera" IsChecked="True" Checked="radioButton_Checked"/>
+        <RadioButton x:Name="cm2" Content="Camera 2" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" Checked="radioButton_Checked"
+                     Grid.Row="0" Grid.Column="1" GroupName="Camera"/>
+        <RadioButton x:Name="cm3" Content="Camera 3" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" Checked="radioButton_Checked"
+                     Grid.Row="0" Grid.Column="2" GroupName="Camera"/>
+        <RadioButton x:Name="cm4" Content="Camera 4" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" Checked="radioButton_Checked"
+                     Grid.Row="0" Grid.Column="4" GroupName="Camera"/>
+        <ContentControl Content="{Binding SelectedCamera, RelativeSource={RelativeSource AncestorType={x:Type local:SceneControl}, Mode=FindAncestor}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Grid.ColumnSpan="4"
+                        Grid.Column="0"/>
+        <Button x:Name="button" Content="Apply" Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Center" Margin="5" Grid.Row="2" VerticalAlignment="Bottom" Width="75" Click="button_Click"/>
+
+    </Grid>
+</UserControl>
